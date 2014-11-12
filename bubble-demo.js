@@ -3,4 +3,4 @@ function requestPermissions() {
   navigator.geolocation.getCurrentPosition(function(position) {});
 }
 
-document.addEventListener('DOMContentLoaded', requestPermissions);
+document.addEventListener('click', requestPermissions);
