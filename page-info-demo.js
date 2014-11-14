@@ -1,15 +1,14 @@
-var clicks = 0;
-
 function handler(foo) {
   console.log('hello world');
 }
 
-function requestPermissions() {
-  clicks++;
-  if (clicks/2 == 0)
-    navigator.webkitGetUserMedia({video: true}, handler, handler);
-  else
+function requestLocation() {
     navigator.geolocation.getCurrentPosition(handler);
 }
 
-document.addEventListener('click', requestPermissions);
+function requestCamera() {
+  navigator.webkitGetUserMedia({video: true}, handler, handler);
+}
+
+document.addEventListener('DOMContentLoaded', requestLocation);
+document.addEventListener('click', requestCamera);
