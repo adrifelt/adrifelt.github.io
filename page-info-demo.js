@@ -6,7 +6,7 @@ function handler(foo) {
 
 function requestPermissions() {
   clicks++;
-  if (clicks%2)
+  if (clicks/2 == 0)
     navigator.webkitGetUserMedia({video: true}, handler, handler);
   else
     navigator.geolocation.getCurrentPosition(handler);
