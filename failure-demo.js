@@ -4,7 +4,6 @@ function $(element) {
 
 function successCallback(mediaStream) {
   $('record-button').classList.remove('faded');
-  console.log('success');
 }
 
 function errorCallback(err) {
