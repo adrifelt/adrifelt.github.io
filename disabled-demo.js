@@ -2,10 +2,6 @@ function $(element) {
   return document.getElementById(element);
 }
 
-function handler(foo) {
-  console.log('hello world');
-}
-
 function reflectPermissionStatus(permission) {
   if (permission == 'granted') {
     $('notifications-toggle').checked = true;
@@ -28,13 +24,7 @@ function toggleClicked() {
   }
 }
 
-function checkPermissionOnLoad() {
-  reflectPermissionStatus(Notification.permission);
-}
-
-function setup() {
+document.addEventListener('DOMContentLoaded', function() {
   $('notifications-toggle').addEventListener('click', toggleClicked);
-  checkPermissionOnLoad();
-}
-
-document.addEventListener('DOMContentLoaded', setup);
+  reflectPermissionStatus(Notification.permission);
+});
