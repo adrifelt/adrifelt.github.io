@@ -17,6 +17,9 @@
         padding: 20px;
         text-align: center;
       }
+      .faded {
+        opacity: .4;
+      }
       #heading {
         font-size: 25px;
         padding-bottom: 10px;
@@ -125,7 +128,7 @@
       </div>
 
       <div id="table-container">
-        <div class="row">
+        <div class="row" id="notifications">
           <div class="alert-type">Notifications</div>
           <div class="toggle-switch">
               <input type="checkbox" name="toggle-switch"
@@ -154,8 +157,7 @@
           <div class="alert-type">Facebook</div>
           <div class="toggle-switch">
               <input type="checkbox" name="toggle-switch"
-                  class="toggle-switch-checkbox" id="facebook-toggle"
-                  checked>
+                  class="toggle-switch-checkbox" id="facebook-toggle">
               <label class="toggle-switch-label" for="facebook-toggle">
                   <span class="toggle-switch-inner"></span>
                   <span class="toggle-switch-button"></span>
