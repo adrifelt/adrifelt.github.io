@@ -1,0 +1,168 @@
+<html>
+  <head>
+    <title>Disabled Demo</title>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300'
+          rel='stylesheet' type='text/css'>
+    <style>
+      .alert-type {
+        display: table-cell;
+        font-size: 18px;
+        text-align: left;
+        width: 120px;
+      }
+      body {
+        color: white;
+        font-family: 'Roboto', sans-serif;
+        font-size: 20px;
+        padding: 20px;
+        text-align: center;
+      }
+      #heading {
+        font-size: 25px;
+        padding-bottom: 10px;
+      }
+      #hook {
+        padding-bottom: 15px;
+      }
+      html {
+        background: url(blue-flowers.jpg) no-repeat center center fixed;
+        background-size: cover;
+        overflow: hidden;
+      }
+      .row {
+        display: table-row;
+        margin-left: auto;
+        margin-right: auto;
+        width: 200px;
+      }
+      #shade {
+        background-color: rgba(0,0,0,0.7);
+        margin-left: auto;
+        margin-right: auto;
+        padding: 20px;
+        width: 320px;
+      }
+      #table-container {
+        display: table;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .toggle-switch {
+        display: table-cell;
+        position: relative;
+        width: 70px;
+        -webkit-user-select:none;
+      }
+      .toggle-switch-button {
+        background: #fff;
+        bottom: 4px;
+        display: block;
+        margin: 6px;
+        position: absolute;
+        right: 36px;
+        top: 0;
+        transition: all 0.3s ease-in 0s;
+        width: 18px;
+      }
+      .toggle-switch-checkbox {
+        display: none;
+      }
+      .toggle-switch-checkbox:checked +
+      .toggle-switch-label
+      .toggle-switch-inner {
+        margin-left: 0;
+      }
+      .toggle-switch-checkbox:checked +
+      .toggle-switch-label
+      .toggle-switch-button {
+        right: 0px; 
+      }
+      .toggle-switch-label {
+        display: block;
+        overflow: hidden;
+      }
+      .toggle-switch-inner {
+        display: block;
+        margin-left: -100%;
+        transition: margin 0.3s ease-in 0s;
+        width: 200%;
+      }
+      .toggle-switch-inner:before,
+      .toggle-switch-inner:after {
+        box-sizing: border-box;
+        color: white;
+        display: block;
+        float: left;
+        font-size: 14px;
+        font-weight: bold;
+        height: 18px;
+        line-height: 18px;
+        padding: 0;
+        width: 50%;
+      }
+      .toggle-switch-inner:before {
+        background-color: #f6be1a;
+        color: white;
+        content: "YES";
+        padding-right: 18px;
+      }
+      .toggle-switch-inner:after {
+        background-color: #a1a1a1;
+        color: white;
+        content: "NO";
+        padding-right: 17px;
+        text-align: right;
+      }
+    </style>
+    <script src="disabled-demo.js"></script>
+  </head>
+  <body>
+    <div id="shade">
+      <div id="heading">Stay Updated</div>
+
+      <div id="hook">
+        Be the first to hear about<br>our new San Francisco stores!
+      </div>
+
+      <div id="table-container">
+        <div class="row">
+          <div class="alert-type">Notifications</div>
+          <div class="toggle-switch">
+              <input type="checkbox" name="toggle-switch"
+                  class="toggle-switch-checkbox" id="notifications-toggle">
+              <label class="toggle-switch-label" for="notifications-toggle">
+                  <span class="toggle-switch-inner"></span>
+                  <span class="toggle-switch-button"></span>
+              </label>
+          </div>
+        </div>
+
+        <div id="email" class="row">
+          <div class="alert-type">E-mail alerts</div>
+          <div class="toggle-switch">
+              <input type="checkbox" name="toggle-switch"
+                  class="toggle-switch-checkbox" id="email-toggle"
+                  checked>
+              <label class="toggle-switch-label" for="email-toggle">
+                  <span class="toggle-switch-inner"></span>
+                  <span class="toggle-switch-button"></span>
+              </label>
+          </div>
+        </div>
+
+        <div id="facebook" class="row">
+          <div class="alert-type">Facebook</div>
+          <div class="toggle-switch">
+              <input type="checkbox" name="toggle-switch"
+                  class="toggle-switch-checkbox" id="facebook-toggle"
+                  checked>
+              <label class="toggle-switch-label" for="facebook-toggle">
+                  <span class="toggle-switch-inner"></span>
+                  <span class="toggle-switch-button"></span>
+              </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
