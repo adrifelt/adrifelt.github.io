@@ -6,13 +6,14 @@ function successCallback(mediaStream) {
   $('record-button').classList.remove('faded');
 }
 
-function errorCallback(err) {
-  $('record-button').classList.add('faded');
-  console.log(err);
-}
-
 function buttonClick() {
-  navigator.webkitGetUserMedia({audio: true}, successCallback, errorCallback);
+  navigator.webkitGetUserMedia(
+      {audio: true},
+      successCallback,
+      function(err) {
+        $('record-button').classList.add('faded');
+        console.log(err);
+      });
 }
 
 function setup() {
