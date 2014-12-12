@@ -2,13 +2,16 @@
   <head>
     <title>Notifications Demo (crash?)</title>
     <script>
-    function runOnLoad() {
-      Notification.requestPermission( function(status) {
-        console.log(status);
+      window.addEventListener('load', function () {
+        Notification.requestPermission(function (status) {
+          // This allows to use Notification.permission with Chrome/Safari
+          if (Notification.permission !== status) {
+            Notification.permission = status;
+          }
+        });
       });
-    }
     </script>
   </head>
-  <body onload="runOnLoad();">
+  <body>
   </body>
 </html>
