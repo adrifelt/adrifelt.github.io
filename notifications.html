@@ -21,12 +21,8 @@
 
   button.addEventListener('click', function () {
     // If the user agreed to get notified
-    // Let's try to send ten notifications
     if (window.Notification && Notification.permission === "granted") {
-      for (var i = 0; i < 10; i++) {
-        // Thanks to the tag, we should only see the "Hi! 9" notification
-        var n = new Notification("Hi! " + i, {tag: 'soManyNotification'});
-      }
+      var n = new Notification("Hi!");
     }
 
     // If the user hasn't told if he wants to be notified or not
@@ -40,10 +36,7 @@
 
         // If the user said okay
         if (status === "granted") {
-          for (var i = 0; i < 10; i++) {
-            // Thanks to the tag, we should only see the "Hi! 9" notification
-            var n = new Notification("Hi! " + i, {tag: 'soManyNotification'});
-          }
+          var n = new Notification("Hi!");
         }
 
         // Otherwise, we can fallback to a regular modal alert
@@ -61,5 +54,5 @@
   });
 });
             </script>
-            <script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"beacon-3.newrelic.com","queueTime":1,"licenseKey":"42869b6ed3","agent":"js-agent.newrelic.com/nr-476.min.js","transactionName":"b1QHMUtVDRdSW0YKXVYeIxBXVxcNXFYdCEdVUEsSUF8KSkVRVxRBAlIKAVxrEAVeSF4G","applicationID":"3172075","errorBeacon":"bam.nr-data.net","applicationTime":177}</script></body>
+            <script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"beacon-3.newrelic.com","queueTime":1,"licenseKey":"42869b6ed3","agent":"js-agent.newrelic.com/nr-476.min.js","transactionName":"b1QHMUtVDRdSW0YKXVYeIxBXVxcNXFYdCEdVUEsSUF8KSkVRVxRBAlIKAVxrEAVeSF4G","applicationID":"3172075","errorBeacon":"bam.nr-data.net","applicationTime":171}</script></body>
 </html>
