@@ -5,11 +5,7 @@
       <button>Notify me!</button>
       <script type="text/javascript">
       window.addEventListener('load', function () {
-        Notification.requestPermission(function (status) {
-          /*if (Notification.permission !== status) {
-            Notification.permission = status;
-          }*/
-        });
+        Notification.requestPermission(function () { });
       });
     </script>
 </html>
