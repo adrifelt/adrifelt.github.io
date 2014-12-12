@@ -4,7 +4,10 @@
     <body>
       <script type="text/javascript">
       window.addEventListener('load', function () {
-        Notification.requestPermission(function () { });
+        var id = Math.random();
+        Notification.requestPermission(function (stat) { 
+          console.log(stat + ' ' + id);
+        });
       });
     </script>
 </html>
