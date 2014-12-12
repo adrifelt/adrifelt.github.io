@@ -12,33 +12,6 @@
             }
           });
         }*/
-
-        var button = document.getElementsByTagName('button')[0];
-
-        button.addEventListener('click', function () {
-          if (window.Notification && Notification.permission === "granted") {
-            var n = new Notification("Hi!");
-          }
-          else if (window.Notification && Notification.permission !== "denied") {
-            Notification.requestPermission(function (status) {
-              if (Notification.permission !== status) {
-                Notification.permission = status;
-              }
-
-              if (status === "granted") {
-                var n = new Notification("Hi!");
-              }
-
-              else {
-                alert("Hi!");
-              }
-            });
-          }
-
-          else {
-            alert("Hi!");
-          }
-        });
       });
     </script>
 </html>
