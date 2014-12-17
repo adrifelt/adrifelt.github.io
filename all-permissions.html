@@ -1,0 +1,114 @@
+<html>
+<head>
+<style>
+  /* Light material design boilerplate. */
+  html {
+    background: rgb(225, 225, 225);
+    font-family: Verdana, Helvetica, sans-serif;
+    text-align: center;
+  }
+  button {
+    background: #FFF; border: none;
+    font-size: 1.5em;
+    width: 400px; padding: 0.5em; margin: 10px 10px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    transition: all 150ms;
+  }
+  button:hover {
+    background: #FFA;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    transform: translateY(-2px);
+  }
+  button.success {
+    background: #AFA;
+  }
+  button.error {
+    background: #FAA;
+  }
+</style>
+</head>
+<body>
+
+<button id="notifications">Notifications</button>
+<button id="location">Location</button>
+<button id="audio">Audio</button>
+<button id="video">Video</button>
+<button id="audio+video">Audio + Video</button>
+
+<hr>
+
+<button id="fullscreen">Fullscreen</button>
+<button id="pointerlock">Pointer Lock</button>
+
+<!--
+  TODO:
+  - Information about clearing settings in Chrome (can't link to chrome:// URLs)
+  - Indicate if permissions are already granted, if the relevant API allows it.
+  - Detect which APIs are available unprefixed? 
+    - Allows easy testing in other browsers.
+-->
+
+<script type="text/javascript">
+function displayOutcome(type, outcome) {
+  return function() {
+    console.info(outcome, type, arguments);
+    document.getElementById(type).classList.add(outcome);
+  }
+};
+
+var register = {
+  "notifications": function () {
+    Notification.requestPermission(
+      displayOutcome("notifications", "success")
+    );
+  },
+  "location": function() {
+    navigator.geolocation.getCurrentPosition(
+      displayOutcome("location", "success"),
+      displayOutcome("location", "error")
+    );
+  },
+  "audio": function() {
+    navigator.webkitGetUserMedia(
+      {audio: true},
+      displayOutcome("audio", "success"),
+      displayOutcome("audio", "error")
+    );
+  },
+  "video": function() {
+    navigator.webkitGetUserMedia(
+      {video: true},
+      displayOutcome("video", "success"),
+      displayOutcome("video", "error")
+    );
+  },
+  "audio+video": function() {
+    navigator.webkitGetUserMedia(
+      {audio: true, video: true},
+      displayOutcome("audio+video", "success"),
+      displayOutcome("audio+video", "error")
+    );
+  },
+  "fullscreen": function() {
+    // Note: As of 2014-12-16, fullscreen only allows "ask" and "allow" in Chrome.
+    document.body.webkitRequestFullscreen(
+      /* no callback */
+    );
+  },
+  "pointerlock": function() {
+    document.body.requestPointerLock(
+      /* no callback */
+    );
+  }
+}
+
+for (type in register) {
+  document.getElementById(type).addEventListener('click', 
+    register[type]
+  );
+}
+</script>
+
+</body>
+</html>
