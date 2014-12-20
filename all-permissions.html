@@ -58,10 +58,28 @@ function displayOutcome(type, outcome) {
   }
 };
 
+function displayOutcomeForNotifications(outcome) {
+  switch(outcome) {
+    case "granted":
+      console.info(outcome, "notifications");
+      document.getElementById("notifications").classList.add("success");
+      break;
+    case "denied":
+    case "default":
+      // "default" is supposed to be like "denied", except the user hasn't made an explicit decision yet.
+      // https://notifications.spec.whatwg.org/#permission-model
+      console.error(outcome, "notifications");
+      document.getElementById("notifications").classList.add("error");
+      break;
+    default:
+      throw "Unknown notification API response.";
+  }
+};
+
 var register = {
   "notifications": function () {
     Notification.requestPermission(
-      displayOutcome("notifications", "success")
+      displayOutcomeForNotifications
     );
   },
   "location": function() {
