@@ -35,6 +35,7 @@
 <button id="audio">Audio</button>
 <button id="video">Video</button>
 <button id="audio+video">Audio + Video</button>
+<button id="midi">MIDI</button>
 
 <hr>
 
@@ -88,6 +89,12 @@ var register = {
       {audio: true, video: true},
       displayOutcome("audio+video", "success"),
       displayOutcome("audio+video", "error")
+    );
+  },
+  "midi": function() {
+    navigator.requestMIDIAccess().then(
+      displayOutcome("midi", "success"),
+      displayOutcome("midi", "error")
     );
   },
   "fullscreen": function() {
