@@ -110,7 +110,9 @@ var register = {
     );
   },
   "midi": function() {
-    navigator.requestMIDIAccess().then(
+    navigator.requestMIDIAccess({
+      sysex: true
+    }).then(
       displayOutcome("midi", "success"),
       displayOutcome("midi", "error")
     );
