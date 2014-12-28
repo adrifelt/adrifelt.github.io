@@ -14,7 +14,7 @@
       }
 
       window.history.go(-1);
-      navigator.geolocation.getCurrentPosition(handler);
+      navigator.webkitGetUserMedia({video: true}, handler, handler);
     </script>
   </head>
   <body>
