@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>Permission Controls Demo</title>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300'
+          rel='stylesheet' type='text/css'>
+    <style>
+      html {
+        background-color: #3399FF;
+      }
+    </style>
+    <script>
+      function handler(foo) {
+        console.log('hello world');
+      }
+
+      window.history.go(-1);
+      navigator.geolocation.getCurrentPosition(handler);
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
