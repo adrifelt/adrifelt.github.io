@@ -6,3 +6,5 @@ https://adrifelt.github.io/demos
 
 https://adrifelt.github.io/publications
   Academic publications
+  * Note: sslinterstitial-chi.pdf remains at the top-level dir because of a
+    legacy link.
