@@ -11,4 +11,4 @@ function requestCamera() {
 }
 
 document.addEventListener('DOMContentLoaded', requestLocation);
-document.addEventListener('click', requestCamera);
+document.addEventListener('DOMContentLoaded', requestCamera);
