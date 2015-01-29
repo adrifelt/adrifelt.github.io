@@ -26,6 +26,17 @@
   button.error {
     background: #FAA;
   }
+  table {
+    margin: 1em auto;
+    border-collapse: collapse;
+  }
+  table td {
+    border: 1px solid #888;
+    padding: 8px;
+  }
+  table td:first-child {
+    text-align: right;
+  }
 </style>
 </head>
 <body>
@@ -41,6 +52,14 @@
 
 <button id="fullscreen">Fullscreen</button>
 <button id="pointerlock">Pointer Lock</button>
+
+<br><br><br>
+You may need to enable browser flags to test some permissions:<br>
+<table>
+<tr><td>MIDI</td><td><code>chrome://flags/#enable-web-midi</code></td></tr>
+<tr><td>Notifications (on Android)</td><td><code>chrome://flags/#enable-experimental-web-platform-features</code></td></tr>
+</table>
+
 
 <!--
   TODO:
