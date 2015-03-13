@@ -1,0 +1,32 @@
+<html>
+<head>
+  <title>Ads demo</title>
+  <script>
+    function listScripts() {
+      var scriptList = document.scripts;
+      var i;
+      for (i = 0; i < scriptList.length; i++) {
+        txt = txt + [i] + " - " +  scriptList[i].src + "<br>";
+      }
+      document.getElementById("target").innerHTML = txt;
+    }
+  </script>
+	
+	
+</head>
+<body onLoad="listScripts()">
+<script type="text/javascript"><!--
+	google_ad_client = "ca-pub-7086844621019153";
+	/* HaloMaps Main */
+	google_ad_slot = "3792324847";
+	google_ad_width = 728;
+	google_ad_height = 90;
+	//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+<p id="target"></p>
+
+</body>
+</html>
