@@ -1,0 +1,20 @@
+{
+  "name": "adrifelt.github.io",
+  "version": "0.0.0",
+  "homepage": "https://github.com/adrifelt/adrifelt.github.io",
+  "authors": [
+    "felt <felt@chromium.org>"
+  ],
+  "main": "index.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.5.2"
+  }
+}

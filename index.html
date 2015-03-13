@@ -1,0 +1,385 @@
+<html>
+<head>
+  <title>felt</title>
+  <link href='//fonts.googleapis.com/css?family=Roboto+Condensed:300' rel='stylesheet' type='text/css'>
+  <link href='//fonts.googleapis.com/css?family=Roboto:400,100,700' rel='stylesheet' type='text/css'>
+  <link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
+  <link rel="import" href="bower_components/core-menu/core-menu.html">
+  <link rel="import" href="bower_components/core-pages/core-pages.html">
+  <link rel="import" href="bower_components/paper-dropdown/paper-dropdown.html">
+  <link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+  <link rel="import" href="bower_components/paper-item/paper-item.html">
+  <link rel="import" href="bower_components/paper-shadow/paper-shadow.html">
+  <link rel="import" href="personal/publication.html">
+  <style>
+    html {
+      height: 100%;
+    }
+    body {
+      background-color: #455A64;
+      color: white;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 400;
+      height: 100%;
+      min-height: 100%;
+    }
+
+    /* Reusable generic layout classes. */
+    .all-wide {
+      width: 100%;
+    }
+    .cell {
+      display: table-cell;
+    }
+    .centered {
+      margin: 0 auto;
+      width: 65%;
+    }
+    .row {
+      display: table-row;
+    }
+    .table {
+      display: table;
+      width: 100%;
+    }
+    .table-collapse {
+      border-collapse: collapse;
+      display: table;
+    }
+
+    /* Spacing and text styling. */
+    a {
+      color: #CFD8DC;
+    }
+    .container {
+      background-color: #607D8B;
+    }
+    .content-area {
+      background-color: #455A64;
+      padding: 15px;
+      font-size: 1.1em;
+      font-weight: 100;
+      position: relative !important;
+    }
+    #filter {
+      background-color: white;
+      border: 5px solid #E8E8E8;
+      border-bottom: 0;
+      color:  #727272;
+      font-size: .8em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    .filter-dropdown-menu {
+      border-color: #B6B6B6;
+      color: #727272;
+      font-size: 1em;
+    }
+    .filter-item {
+      color:  #727272;
+      font-size: 1em;
+    }
+    #first-name {
+      font-size: 3.2em;
+      letter-spacing: 0;
+    }
+    .grid-elem {
+      background-color: white;
+      border: 5px solid #E8E8E8;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      padding-top: 5px;
+    }
+    #heading {
+      padding-top: 60px;
+      padding-bottom: 15px;
+      margin: 0 auto;
+      width: 80%;
+    }
+    #img {
+      text-align: right;
+    }
+    #last-names {
+      font-size: 2.25em;
+      letter-spacing: .05em;
+    }
+    #my-name {
+      font-weight: 100;
+      line-height: 1.9em;
+      text-align: left;
+      text-transform: uppercase;
+    }
+    #nav-bar {
+      padding-top: 15px;
+    }
+    .not-highlighted {
+      display: none;
+    }
+    paper-tabs.orange {
+      font-weight: 100;
+      text-transform: uppercase;
+      border-top: 1px solid #FF9800;
+    }
+    paper-tabs.orange::shadow #selectionBar {
+      background-color: #FF9800;
+    }
+    paper-tabs.orange paper-tab::shadow #ink {
+      color: #FF9800;
+    }
+    template {
+      height: 100%;
+    }
+    #photo-circle {
+      height: 150px;
+      vertical-align: middle;
+    }
+    #pub-grid {
+      width: calc(100% - 5px);
+      width: -moz-calc(100% - 5px);
+      width: -webkit-calc(100% - 5px);
+    }
+    .pubs {
+      background-color: #E8E8E8;
+      color: #212121;
+    }
+    #pubs-bottom-placeholder {
+      background-color: #E8E8E8;
+      height: 30px;
+    }
+  </style>
+</head>
+<body unresolved fullbleed>
+<template is="auto-binding">
+
+  <paper-shadow z="3" class="container centered"> <!-- Mid-section -->
+
+    <!-- Name and photo -->
+    <div class="table" id="heading">
+      <div class="row">
+        <div id="my-name" class="cell">
+          <span id="first-name">Adrienne</span>
+          <br>
+          <span id="last-names">Porter Felt</span>
+        </div>
+        <div id="img" class="cell">
+          <img src="personal/cds-circle.png" id="photo-circle">
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabbed navigation bar -->
+    <div class="all-wide" id="nav-bar">
+      <paper-tabs class="orange" selected="0" id="tabs">
+        <paper-tab>About</paper-tab>
+        <paper-tab>Publications</paper-tab>
+        <paper-tab>Demos/talks</paper-tab>
+      </paper-tabs>
+    </div>
+
+    <!-- Content area -->
+    <div class="all-wide">
+      <core-pages selected="{{$.tabs.selected}}">
+
+        <!-- Biography -->
+        <div class="content-area">
+          <p>I'm a software engineer who works on <a
+          href="https://www.google.com/chrome/">Google Chrome</a> <a
+          href="https://www.chromium.org/Home/chromium-security">security</a>. I
+          spend my days trying to make the Internet a safer place. My primary
+          focus is <a href="https://www.chromium.org/Home/chromium-security/enamel">usable security</a>.</p>
+          <p>I spent
+          four years <a href="https://www.eecs.berkeley.edu/Pubs/TechRpts/2012/EECS-2012-185.pdf">evaluating</a> whether
+          Android and Chrome permissions help keep
+          users safe. I finished my PhD at UC Berkeley in 2012. I was advised by
+          <a href="https://www.cs.berkeley.edu/~daw/">David Wagner</a>.</p>
+          <p>Porter is my middle -- not last -- name. However, it's a name that I share with my father
+          (<a
+          href="http://www.flight93memorialsfb.com/Heros-Of-Flight-93/pages/Edward-Felt_jpg.htm">Edward Porter Felt</a>),
+          grandfather, and so on, so I like to use it.</p>
+          <p>My BFF is a lazy old pit bull named
+          <a href="https://twitter.com/punkythepittie">Punky</a>.</p>
+        </div>
+
+        <!-- Publications tab -->
+        <div class="pubs">
+          <div id="filter">
+            <paper-dropdown-menu label="Filter list of papers"
+                class="filter-dropdown-menu">
+              <paper-dropdown class="dropdown">
+                <core-menu class="menu" selected="0">
+                  <paper-item value="0" class="filter-item">My favorite papers</paper-item>
+                  <paper-item value="1" class="filter-item">Chrome</paper-item>
+                  <paper-item value="2" class="filter-item">Android</paper-item>
+                  <paper-item value="3" class="filter-item">Permissions</paper-item>
+                  <paper-item value="4" class="filter-item">Usable security</paper-item>
+                  <paper-item value="5" class="filter-item">All publications</paper-item>
+                </core-menu>
+              </paper-dropdown>
+            </paper-dropdown-menu>
+          </div>
+          <div class="table-collapse" id="pub-grid">
+            <pub-lication class="row grid-elem highlighted">
+              <h1>Improving SSL Warnings: Comprehension and Adherence</h1>
+              <h2>ACM CHI Conference on Human Factors in Computing Systems
+                  2015</h2>
+              <span>Adrienne Porter Felt, Alex Ainslie, Robert W. Reeder,
+                  Sunny Consolvo, Somas Thyagaraja, Alan Bettes, Helen Harris,
+                  Jeff Grimes</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>Your Reputation Precedes You: History, Reputation, and the
+                  Chrome Malware Warning</h1>
+              <h2>Symposium on Usable Privacy and Security (SOUPS) 2014</h2>
+              <span>Hazim Almuhimedi, Adrienne Porter Felt, Robert W. Reeder,
+                  Sunny Consolvo</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem highlighted">
+              <h1>Experimenting At Scale With Google Chrome's SSL Warning</h1>
+              <h2>ACM CHI Conference on Human Factors in Computing Systems
+                  2014</h2>
+              <h3>Honorable Mention Award (top 5%)</h3>
+              <span>Hazim Almuhimedi, Adrienne Porter Felt, Robert W. Reeder,
+                  Sunny Consolvo</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem highlighted">
+              <h1>Alice in Warningland: A Large-Scale Field Study of Browser
+                  Security Warning Effectiveness</h1>
+              <h2>USENIX Security Symposium 2013</h2>
+              <span>Devdatta Akhawe and Adrienne Porter Felt</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>An Evaluation of the Google Chrome Extension Security
+                  Architecture</h1>
+              <h2>USENIX Security Symposium 2012</h2>
+              <span>Nicholas Carlini, Adrienne Porter Felt, David Wagner</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem highlighted">
+              <h1>Android Permissions: User Attention, Comprehension, and
+                  Behavior</h1>
+              <h2>Symposium on Usable Privacy and Security (SOUPS) 2012</h2>
+              <h3>Best paper award</h3>
+              <span>Adrienne Porter Felt, Elizabeth Ha, Serge Egelman,
+                  Ariel Haney, Erika Chin, David Wagner</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem highlighted">
+              <h1>How to Ask For Permission</h1>
+              <h2>USENIX Workshop on Hot Topics in Security (HotSec) 2012</h2>
+              <span>Adrienne Porter Felt, Serge Egelman, Matthew Finifter,
+                  Devdatta Akhawe, David Wagner</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>Measuring User Confidence in Smartphone Security and
+                  Privacy</h1>
+              <h2>Symposium on Usable Privacy and Security (SOUPS) 2012</h2>
+              <span>Erika Chin, Adrienne Porter Felt, Vyas Sekar,
+                  David Wagner</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>Choice Architecture and Smartphone Privacy: There's a Price
+                  For That</h1>
+              <h2>Workshop on the Economics of Information Security (WEIS)
+                  2012</h2>
+              <span>Serge Egelman, Adrienne Porter Felt, David Wagner</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>I've Got 99 Problems, But Vibration Ain't One: A Survey of
+                  Smartphone Users' Concerns</h1>
+              <h2>ACM Workshop on Security and Privacy in Smartphones and
+                  Mobile Devices (SPSM) 2012</h2>
+              <span>Adrienne Porter Felt, Serge Egelman, David Wagner</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>Mining Permission Request Patterns from Android and Facebook
+                  Applications</h1>
+              <h2>IEEE International Conference on Data Mining (ICDM) 2012</h2>
+              <span>Mario Frank, Ben Dong, Adrienne Porter Felt, Dawn Song</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>AdDroid: Privilege Separation for Applications and Advertisers
+                  in Android</h1>
+              <h2>ACM Symposium on Information, Computer, and Communications
+                  Security (AsiaCCS) 2012</h2>
+              <span>Paul Pearce, Adrienne Porter Felt, Gabriel Nunez,
+                  David Wagner</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem highlighted">
+              <h1>Android Permissions Demystified</h1>
+              <h2>ACM Conference on Computer and Communications Security (CCS)
+                  2011</h2>
+              <span>Adrienne Porter Felt, Erika Chin, Steve Hanna, Dawn Song,
+                  David Wagner</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>Analyzing Inter-Application Communication in Android</h1>
+              <h2>Conference on Mobile Systems, Applications, and Services
+                  (MobiSys) 2011</h2>
+              <span>Erika Chin, Adrienne Porter Felt, Kate Greenwood,
+                  David Wagner</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>A Survey of Mobile Malware in the Wild</h1>
+              <h2>ACM Workshop on Security and Privacy in Smartphones and Mobile
+                  Devices (SPSM) 2011</h2>
+              <span>Adrienne Porter Felt, Matthew Finifter, Erika Chin,
+                  Steve Hanna, David Wagner</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>Permission Re-delegation: Attacks and Defenses</h1>
+              <h2>USENIX Security Symposium 2011</h2>
+              <span>Adrienne Porter Felt, Helen Wang, Alexander Moshchuk,
+                  Steve Hanna, Erika Chin</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>The Effectiveness of Application Permissions</h1>
+              <h2>USENIX Conference on Web Application Development (WebApps)
+                  2011</h2>
+              <span>Adrienne Porter Felt, Kate Greenwood, David Wagner</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>Phishing on Mobile Devices</h1>
+              <h2>Web 2.0 Security and Privacy (W2SP) 2011</h2>
+              <span>Adrienne Porter Felt, David Wagner</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem highlighted">
+              <h1>Protecting Browsers from Extension Vulnerabilities</h1>
+              <h2>Network and Distributed System Security Symposium (NDSS)
+                  2011</h2>
+              <span>Adam Barth, Adrienne Porter Felt, Prateek Saxena,
+                  Aaron Boodman</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>Diesel: Applying Privilege Separation to Database Access</h1>
+              <h2>ACM Symposium on Information, Computer, and Communications
+                  Security (AsiaCCS) 2011</h2>
+              <span>Adrienne Porter Felt, Matthew Finifter, Joel Weinberger,
+                  David Wagner</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>Object Views: Fine-Grained Sharing in Browsers</h1>
+              <h2>International Conference on World Wide Web (WWW) 2010</h2>
+              <span>Leo Meyerovich, Adrienne Porter Felt, Mark S Miller</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>Privacy Protection for Social Networking APIs</h1>
+              <h2>Web 2.0 Security and Privacy (W2SP) 2008</h2>
+              <span>Adrienne Porter Felt and David Evans</span>
+            </pub-lication>
+            <pub-lication class="row grid-elem not-highlighted">
+              <h1>Talking to Strangers Without Taking Their Candy: Isolating
+                  Proxied Content</h1>
+              <h2>Workshop on Social Network Systems (SNS) 2008</h2>
+              <span>Adrienne Porter Felt, Pieter Hooimeijer, David Evans,
+                  Westley Weimer</span>
+            </pub-lication>
+          </div>
+          <div id="pubs-bottom-placeholder"></div>
+        </div>
+
+        <div>demos</div>
+      </core-pages>
+    </div>
+  </paper-shadow>
+
+</template>
+</body>
+</html>
