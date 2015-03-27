@@ -53,6 +53,11 @@
 <button id="fullscreen">Fullscreen</button>
 <button id="pointerlock">Pointer Lock</button>
 
+<hr>
+
+<button id="copy">Copy</button>
+
+
 <br><br><br>
 You may need to enable browser flags to test some permissions:<br>
 <table>
@@ -165,6 +170,30 @@ var register = {
       displayOutcome("midi", "error")
     );
   },
+  "copy": (function() {
+    var interceptCopy = false;
+
+    document.addEventListener("copy", function(e){
+      if (interceptCopy) {
+        // From http://www.w3.org/TR/clipboard-apis/#h4_the-copy-action
+        e.clipboardData.setData("text/plain",
+          "This text was copied from the all-permissions demo."
+        );
+        e.clipboardData.setData("text/html",
+          "This text was <b>copied</b> from the " + 
+          "<a href='https://adrifelt.github.io/demos/all-permissions.html'>" + 
+          "all-permissions demo</a>."
+        );
+        e.preventDefault();
+      }
+    });
+
+    return function() {
+      interceptCopy = true;
+      document.execCommand("copy");
+      interceptCopy = false;
+    }
+  }()),
   "fullscreen": function() {
     // Note: As of 2014-12-16, fullscreen only allows "ask" and "allow" in Chrome.
     document.body.requestFullScreen(
