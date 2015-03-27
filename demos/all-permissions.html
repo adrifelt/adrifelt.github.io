@@ -65,8 +65,6 @@ You may need to enable browser flags to test some permissions:<br>
   TODO:
   - Information about clearing settings in Chrome (can't link to chrome:// URLs)
   - Indicate if permissions are already granted, if the relevant API allows it.
-  - Detect which APIs are available unprefixed? 
-    - Allows easy testing in other browsers.
 -->
 
 <script type="text/javascript">
@@ -95,6 +93,37 @@ function displayOutcomeForNotifications(outcome) {
   }
 };
 
+navigator.getUserMedia = (
+  navigator.getUserMedia ||
+  navigator.webkitGetUserMedia ||
+  navigator.mozGetUserMedia ||
+  navigator.msGetUserMedia
+);
+navigator.requestFullscreen = (
+  navigator.requestFullscreen ||
+  navigator.webkitRequestFullscreen ||
+  navigator.mozRequestFullscreen ||
+  navigator.msRequestFullscreen
+);
+navigator.requestMIDIAccess = (
+  navigator.requestMIDIAccess ||
+  navigator.webkitRequestMIDIAccess ||
+  navigator.mozRequestMIDIAccess ||
+  navigator.msRequestMIDIAccess
+);
+document.body.requestFullScreen = (
+  document.body.requestFullScreen ||
+  document.body.webkitRequestFullScreen ||
+  document.body.mozRequestFullScreen ||
+  document.body.msRequestFullScreen
+);
+document.body.requestPointerLock = (
+  document.body.requestPointerLock ||
+  document.body.webkitRequestPointerLock ||
+  document.body.mozRequestPointerLock ||
+  document.body.msRequestPointerLock
+);
+
 var register = {
   "notifications": function () {
     Notification.requestPermission(
@@ -108,21 +137,21 @@ var register = {
     );
   },
   "audio": function() {
-    navigator.webkitGetUserMedia(
+    navigator.getUserMedia(
       {audio: true},
       displayOutcome("audio", "success"),
       displayOutcome("audio", "error")
     );
   },
   "video": function() {
-    navigator.webkitGetUserMedia(
+    navigator.getUserMedia(
       {video: true},
       displayOutcome("video", "success"),
       displayOutcome("video", "error")
     );
   },
   "audio+video": function() {
-    navigator.webkitGetUserMedia(
+    navigator.getUserMedia(
       {audio: true, video: true},
       displayOutcome("audio+video", "success"),
       displayOutcome("audio+video", "error")
@@ -138,7 +167,7 @@ var register = {
   },
   "fullscreen": function() {
     // Note: As of 2014-12-16, fullscreen only allows "ask" and "allow" in Chrome.
-    document.body.webkitRequestFullscreen(
+    document.body.requestFullScreen(
       /* no callback */
     );
   },
