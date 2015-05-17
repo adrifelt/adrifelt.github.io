@@ -1,0 +1,83 @@
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/core-icon/core-icon.html">
+<link rel="import" href="../bower_components/core-icons/core-icons.html">
+
+<polymer-element name="pub-lication">
+  <template>
+    <style>
+      .cell {
+        display: table-cell;
+      }
+      .grid-elem {
+        background-color: white;
+        border: 5px solid #E8E8E8;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+        width: 100%;
+      }
+      .left {
+        min-width: 50px;
+        text-align: center;
+        vertical-align: middle; 
+      }
+      .paper-icon {
+        color: #FF9800;
+      }
+      .pub {
+        font-size: 1em;
+        padding: 10px; 
+      }
+      polyfill-next-selector { content: '.pub h1'; }
+      .pub ::content h1 {
+        font-size: 1em;
+        font-weight: 400;
+        margin: 0;
+        padding: 0;
+        text-align: left;
+      }
+      polyfill-next-selector { content: '.pub h2'; }
+      .pub ::content h2 {
+        color: #727272;
+        font-size: .8em;
+        font-weight: 400;
+        padding: 0;
+        margin: 0;
+      }
+      polyfill-next-selector { content: '.pub h3'; }
+      .pub ::content h3 {
+        color: #607D8B;
+        font-size: .8em;
+        font-weight: 100;
+        padding: 0;
+        margin: 0;
+        text-transform: uppercase;
+      }
+      polyfill-next-selector { content: '.pub span'; }
+      .pub ::content span {
+        color: #B6B6B6;
+        font-size: .8em;
+      }
+      .row {
+        display: table-row;
+      }
+    </style>
+    <div class="cell left">
+      <paper-button>
+        <core-icon icon="description" class="paper-icon"
+            aria-label="paper-link"></core-icon>
+      </paper-button>
+    </div>
+    <div class="cell">
+      <div class="pub">
+        <content select="h3"></content>
+        <content select="h1"></content>
+        <content select="h2"></content>
+        <content select="span"></content>
+      </div>
+    </div>
+  </template>
+  <script>
+    Polymer({});
+  </script>
+</polymer>
