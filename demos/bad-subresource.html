@@ -1,8 +1,15 @@
 <html>
+  <head>
+    <script>
+      window.setTimeout(addSubresource, 5000);
+      function addSubresource() {
+        var iframe2 = document.getElementById('iframe2');
+        iframe2.src = "http://m-xl.ru/";
+      }
+    </script>
+  </head>
 <body>
 <iframe src="https://malware.testing.google.test/testing/malware/"></iframe>
-<img src="http://mmse.us">
-<iframe src="http://m-xl.ru/"></iframe>
-<script src="ianfette.org"></script>
+<iframe id="iframe2"></iframe>
 </body>
 </html>
