@@ -1,0 +1,110 @@
+<html>
+<head>
+  <title>felt</title>
+  <link href='//fonts.googleapis.com/css?family=Roboto:400,100,700' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Lato:100,400' rel='stylesheet' type='text/css'>
+  <style>
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+  .box {
+    border: 0;
+    float: left;
+    height: 200px;
+    width: 33.299%;
+    text-align: center;
+  }
+  .box-container {
+    background-color: #1A83BB;
+    overflow: auto;
+    text-align: center;
+    width: 100%;
+  }
+  .box-content {
+    color: white;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    font-size: 1.2em;
+    padding: 20px;
+  }
+  .left {
+    text-align: left;
+  }
+  .header {
+    background-color: white;
+    color: gray;
+    font-family: 'Lato', sans-serif;
+    font-size: 4.5em;
+    font-weight: 100;
+    height: 300px;
+    line-height: 300px;
+    text-align: center;
+    width: 100%;
+  }
+  </style>
+  <script>
+  function knuthShuffle(arr) {
+    var end = arr.length;
+    for (var i = 0; i < end; i++) {
+      var randomIndex = Math.floor(Math.random() * (end - i)) + i;
+      var swapTemp = arr[i];
+      arr[i] = arr[randomIndex];
+      arr[randomIndex] = swapTemp;
+    }
+    return arr;
+  }
+
+  function setupPage() {
+    // Set up the box colors.
+    var colors =
+        ['#005B97', '#1A83BB', '#0F6695', '#1370AE', '#327CAE', '#017ABC'];
+    colors = knuthShuffle(colors);
+    var boxes = document.getElementsByClassName('box');
+    for (var i = 0; i < boxes.length; i++) {
+      boxes[i].style.backgroundColor = colors[i % colors.length];
+    }
+  }
+  document.addEventListener('DOMContentLoaded', setupPage);
+  </script>
+</head>
+<body>
+  <div class="header">
+    adrienne porter felt
+  </div>
+  <div class="box-container">
+    <div class="box">
+      <div class="box-content">
+        ABOUT ME
+      </div>
+    </div>
+    <div class="box">
+      <div class="box-content">
+        PUBLICATIONS
+      </div>
+    </div>
+    <div class="box">
+      <div class="box-content">
+        CONTACT
+      </div>
+    </div>
+    <div class="box">
+      <div class="box-content">
+        DEMOS & CODE
+      </div>
+    </div>
+    <div class="box">
+      <div class="box-content">
+        ON TWITTER
+      </div>
+    </div>
+    <div class="box">
+      <div class="box-content">
+        ON MEDIUM
+      </div>
+    </div>
+    <div style="clear: all"></div>
+  </div>
+
+</body>
+</html>
