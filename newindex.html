@@ -1,0 +1,788 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>APF</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,100,700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:100,400" rel="stylesheet" type="text/css">
+  <link rel="import" href="bower_components/paper-button/paper-button.html">
+  <link rel="import" href="bower_components/iron-icons/iron-icons.html">
+  <link rel="import" href="bower_components/iron-icons/communication-icons.html">
+  <link rel="import" href="bower_components/iron-icons/notification-icons.html">
+  <link rel="import" href="bower_components/iron-icons/social-icons.html">
+
+  <style is="custom-style">
+  html, body {
+    font-family: 'Lato', sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  .box {
+    border: 0;
+    display: flex;
+    float: left;
+    height: 200px;
+    justify-content: center;
+    text-align: center;
+    width: 33.299%;
+  }
+  .box a {
+    color: white;
+    text-decoration: none;
+  }
+  .box-container {
+    background-color: #1A83BB;
+    overflow: auto;
+    text-align: center;
+    width: 100%;
+  }
+  .box-content {
+    align-self: center;
+    color: white;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    font-size: 1.2em;
+    padding: 20px;
+  }
+  .box-icons {
+    --iron-icon-height: 1.5em;
+    --iron-icon-width: 1.5em;
+    padding-bottom: 7px;
+  }
+  .box-images {
+    height: 1.3em;
+    padding-bottom: 7px;
+  }
+  .content-section {
+    border-top: 1px #ccc solid;
+    color: #414141;
+    text-align: center;
+    padding: 50px 10% 50px 10%;
+  }
+  .content-section-title {
+    color: gray;
+    font-size: 2em;
+    font-weight: 100;
+    padding-bottom: 20px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .example-img {
+    width: 400px;
+  }
+  .example-img-with-caption {
+    font-size: 1em;
+    padding-bottom: 40px;
+  }
+  .left {
+    text-align: left;
+  }
+  .header {
+    background-color: white;
+    color: gray;
+    font-family: 'Lato', sans-serif;
+    font-size: 4.5em;
+    font-weight: 100;
+    height: 300px;
+    line-height: 300px;
+    text-align: center;
+    width: 100%;
+  }
+  p {
+    font-size: 1.15em;
+    line-height: 1.3em;
+    text-align: left;
+  }
+  .paper {
+    display: none;
+    text-align: left;
+    padding-bottom: 10px;
+  }
+  .paper a {
+    color: rgb(26, 131, 187);
+    text-decoration: none;
+  }
+  .paper-authors {
+    display: none;
+  }
+  paper-button {
+    color: rgb(26, 131, 187);
+    font-size: .9em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  paper-button[toggles] {
+    transition: background-color 0.3s;
+  }
+  paper-button[toggles][active] {
+    background-color: rgba(26, 131, 187, 0.25);
+  }
+  .paper-favorites {
+    display: block;
+    padding-bottom: 10px;
+  }
+  .paper-icons {
+    --iron-icon-height: 1.15em;
+    --iron-icon-width: 1.15em;
+    vertical-align: top;
+  }
+  .paper-title {
+    font-size: 1.15em;
+  }
+  #photo-circle {
+    width: 180px;
+  }
+  #twitter-small-screen {
+    display: none;
+  }
+  #twitter-big-screen {
+    display: block;
+  }
+  </style>
+
+  <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script>
+  var kAllPubsVisible = false;
+
+  function $(elemId) {
+    return document.getElementById(elemId);
+  }
+
+  function knuthShuffle(arr) {
+    var end = arr.length;
+    for (var i = 0; i < end; i++) {
+      var randomIndex = Math.floor(Math.random() * (end - i)) + i;
+      var swapTemp = arr[i];
+      arr[i] = arr[randomIndex];
+      arr[randomIndex] = swapTemp;
+    }
+    return arr;
+  }
+
+  function togglePaperList() {
+    var papers = document.querySelectorAll('.paper');
+    kAllPubsVisible = !kAllPubsVisible;
+    for (var i = 0; i < papers.length; i++)
+      papers[i].style.display = kAllPubsVisible ? 'block' : 'none';
+    if (!kAllPubsVisible) {
+      var favoritePapers = document.querySelectorAll('.paper-favorites');
+      for (var j = 0; j < favoritePapers.length; j++)
+        favoritePapers[j].style.display = 'block';
+    }
+  }
+
+  function setupPage() {
+    // Set up the box colors.
+    var colors =
+        ['#005B97', '#1A83BB', '#0F6695', '#1370AE', '#327CAE', '#017ABC'];
+    colors = knuthShuffle(colors);
+    var boxes = document.getElementsByClassName('box');
+    for (var i = 0; i < boxes.length; i++) {
+      boxes[i].style.backgroundColor = colors[i % colors.length];
+    }
+
+    // Set up button event listeners.
+    $("full-list-button").addEventListener('click', togglePaperList);
+  }
+  document.addEventListener('DOMContentLoaded', setupPage);
+
+  </script>
+</head>
+<body unresolved>
+
+  <!-- header -->
+  <div class="header">
+    adrienne porter felt
+  </div>
+
+  <!-- navigation bar -->
+  <div class="box-container">
+    <div class="box">
+      <div class="box-content">
+        <a href="#about">
+          <iron-icon class="box-icons" icon="social:person"></iron-icon>
+          <br>
+          ABOUT ME
+        </a>
+      </div>
+    </div>
+    <div class="box">
+      <div class="box-content">
+        <a href="#publications">
+          <iron-icon class="box-icons" icon="description"></iron-icon>
+          <br>
+          PUBLICATIONS
+        </a>
+      </div>
+    </div>
+    <div class="box">
+      <div class="box-content">
+        <a href="#code">
+          <iron-icon class="box-icons" icon="code"></iron-icon>
+          <br>
+          CODE & DEMOS
+        </a>
+      </div>
+    </div>
+    <div class="box">
+      <div class="box-content">
+        <a href="#talks">
+          <iron-icon class="box-icons" icon="notification:ondemand-video"></iron-icon>
+          <br>
+          TALKS
+        </a>
+      </div>
+    </div>
+    <div class="box">
+      <div class="box-content">
+        <a href="#contact">
+          <iron-icon class="box-icons" icon="communication:email"></iron-icon>
+          <br>
+          CONTACT
+        </a>
+      </div>
+    </div>
+    <div class="box">
+      <div class="box-content">
+        <a href="#twitter">
+          <img src="img/twitter.png" class="box-images"/>
+          <br>
+          ON TWITTER
+        </a>
+      </div>
+    </div>
+    <div style="clear: all"></div>
+  </div>
+
+  <!-- about me -->
+  <div class="content-section">
+    <a name="about"></a>
+    <div class="content-section-title">About Me</div>
+    <img src="img/felt-photo-border.png" id="photo-circle"/>
+    <p>
+      I'm a software engineer at Google, on the Chrome security team. My goal
+      is to make security an intuitive, helpful experience for non-experts. I'm
+      working on improving the user experience of HTTPS and web permissions.
+      You can find my current job title etc. on <a
+      href="https://www.linkedin.com/pub/adrienne-porter-felt/23/762/ab7">LinkedIn</a>.
+    </p>
+    <p>
+      I'm a recovering academic who tries to blend research and engineering.
+      Previously, I was a research scientist on the Google security research
+      team. I received a PhD in CS from UC Berkeley, where I did my <a
+      href="http://www.eecs.berkeley.edu/Pubs/TechRpts/2012/EECS-2012-185.pdf">dissertation</a>
+      on permission models. I still publish (albeit less often) and sit on
+      program committees (e.g., USENIX 2013-2015, SOUPS 2015, Oakland 2016).
+    </p>
+  </div>
+
+  <!-- publications -->
+  <div class="content-section">
+    <a name="publications"></a>
+    <div class="content-section-title">Publications</div>
+
+    <paper-button tabindex="0" toggles id="full-list-button">
+      Show Full List
+    </paper-button>
+
+    <div class="paper paper-favorites">
+      <div class="paper-title">
+        <a href="http://research.google.com/pubs/pub43265.html">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Improving SSL Warnings: Comprehension and Adherence
+      </div>
+      <div class="paper-venue">
+        ACM CHI Conference on Human Factors in Computing Systems 2015
+      </div>
+      <div class="paper-authors">
+        Adrienne Porter Felt, Alex Ainslie, Robert W. Reeder, Sunny Consolvo,
+        Somas Thyagaraja, Alan Bettes, Helen Harris, and Jeff Grimes
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        <a href="http://www.adrienneporterfelt.com/chromemalwarewarning-soups.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Your Reputation Precedes You: History, Reputation, and the Chrome
+        Malware Warning
+      </div>
+      <div class="paper-venue">
+        Symposium on Usable Privacy and Security (SOUPS) 2014
+      </div>
+      <div class="paper-authors">
+        Hazim Almuhimedi, Adrienne Porter Felt, Robert W. Reeder, Sunny Consolvo
+      </div>
+    </div>
+
+    <div class="paper paper-favorites">
+      <div class="paper-title">
+        <a href="http://www.adrienneporterfelt.com/chi-ssl-experiment.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Experimenting At Scale With Google Chrome's SSL Warning
+      </div>
+      <div class="paper-venue">
+        ACM CHI Conference on Human Factors in Computing Systems 2014
+        (<iron-icon class="paper-icons" icon="icons:star-border"></iron-icon>
+        Honorable mention)
+      </div>
+      <div class="paper-authors">
+        Adrienne Porter Felt, Robert W. Reeder, Hazim Almuhimedi, Sunny Consolvo
+      </div>
+    </div>
+
+    <div class="paper paper-favorites">
+      <div class="paper-title">
+        <a href="http://devd.me/papers/alice-in-warningland.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Alice in Warningland: A Large-Scale Field Study of Browser Security
+        Warning Effectiveness
+      </div>
+      <div class="paper-venue">
+        USENIX Security Symposium 2013
+      </div>
+      <div class="paper-authors">
+        Devdatta Akhawe, Adrienne Porter Felt
+      </div>
+    </div>
+
+    <div class="paper paper-favorites">
+      <div class="paper-title">
+        <a href="https://www.usenix.org/system/files/conference/usenixsecurity12/sec12-final177_0.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        An Evaluation of the Google Chrome Extension Security Architecture
+      </div>
+      <div class="paper-venue">
+        USENIX Security Symposium 2012
+      </div>
+      <div class="paper-authors">
+        Nicholas Carlini, Adrienne Porter Felt, David Wagner
+      </div>
+    </div>
+
+    <div class="paper paper-favorites">
+      <div class="paper-title">
+        <a href="https://www.eecs.berkeley.edu/~daw/papers/anduser-soups12.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Android Permissions: User Attention, Comprehension, and Behavior
+      </div>
+      <div class="paper-venue">
+        Symposium on Usable Privacy and Security (SOUPS) 2012
+        (<iron-icon class="paper-icons" icon="icons:star"></iron-icon>
+        Best paper award)
+      </div>
+      <div class="paper-authors">
+        Adrienne Porter Felt, Elizabeth Ha, Serge Egelman, Ariel Haney, Erika
+        Chin, David Wagner
+      </div>
+    </div>
+
+    <div class="paper paper-favorites">
+      <div class="paper-title">
+        <a href="https://www.usenix.org/system/files/conference/hotsec12/hotsec12-final19.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        How to Ask For Permission
+      </div>
+      <div class="paper-venue">
+        USENIX Workshop on Hot Topics in Security (HotSec) 2012
+      </div>
+      <div class="paper-authors">
+        Adrienne Porter Felt, Serge Egelman, Matthew Finifter, Devdatta Akhawe,
+        David Wagner
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        <a href="https://cups.cs.cmu.edu/soups/2012/proceedings/a1_Chin.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Measuring User Confidence in Smartphone Security and Privacy
+      </div>
+      <div class="paper-venue">
+        Symposium on Usable Privacy and Security (SOUPS) 2012
+      </div>
+      <div class="paper-authors">
+        Erika Chin, Adrienne Porter Felt, Vyas Sekar, David Wagner
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        <a href="http://www.guanotronic.com/~serge/papers/weis12.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Choice Architecture and Smartphone Privacy: There's a Price For That
+      </div>
+      <div class="paper-venue">
+        Workshop on the Economics of Information Security (WEIS) 2012
+      </div>
+      <div class="paper-authors">
+        Serge Egelman, Adrienne Porter Felt, David Wagner
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        <a href="http://www.guanotronic.com/~serge/papers/spsm12.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        I've Got 99 Problems, But Vibration Ain't One: A Survey of Smartphone
+        Users' Concerns
+      </div>
+      <div class="paper-venue">
+        ACM Workshop on Security and Privacy in Smartphones and Mobile Devices
+        (SPSM) 2012
+      </div>
+      <div class="paper-authors">
+        Adrienne Porter Felt, Serge Egelman, David Wagner
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        <a href="http://www.cs.berkeley.edu/~dawnsong/papers/2012%20mining%20permission%20request.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Mining Permission Request Patterns from Android and Facebook
+        Applications
+      </div>
+      <div class="paper-venue">
+        IEEE International Conference on Data Mining (ICDM) 2012
+      </div>
+      <div class="paper-authors">
+        Mario Frank, Ben Dong, Adrienne Porter Felt, Dawn Song
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        <a href="https://www.cs.berkeley.edu/~pearce/papers/addroid_asiaccs_2012.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        AdDroid: Privilege Separation for Applications and Advertisers in
+        Android
+      </div>
+      <div class="paper-venue">
+        ACM Symposium on Information, Computer, and Communications Security
+        (AsiaCCS) 2012
+      </div>
+      <div class="paper-authors">
+        Paul Pearce, Adrienne Porter Felt, Gabriel Nunez, David Wagner
+      </div>
+    </div>
+
+    <div class="paper paper-favorites">
+      <div class="paper-title">
+        <a href="http://www.cs.berkeley.edu/~emc/papers/android_permissions.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Android Permissions Demystified
+      </div>
+      <div class="paper-venue">
+        ACM Conference on Computer and Communications Security (CCS) 2011
+      </div>
+      <div class="paper-authors">
+        Adrienne Porter Felt, Erika Chin, Steve Hanna, Dawn Song, David Wagner
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        <a href="https://www.eecs.berkeley.edu/~daw/papers/intents-mobisys11.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Analyzing Inter-Application Communication in Android
+      </div>
+      <div class="paper-venue">
+        Conference on Mobile Systems, Applications, and Services (MobiSys) 2011
+      </div>
+      <div class="paper-authors">
+        Erika Chin, Adrienne Porter Felt, Kate Greenwood, David Wagner
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        <a href="http://www.cs.swarthmore.edu/~bylvisa1/cs97/f13/Papers/mobilemalware.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        A Survey of Mobile Malware in the Wild
+      </div>
+      <div class="paper-venue">
+        ACM Workshop on Security and Privacy in Smartphones and Mobile Devices
+        (SPSM) 2011
+      </div>
+      <div class="paper-authors">
+        Adrienne Porter Felt, Matthew Finifter, Erika Chin, Steve Hanna, David
+        Wagner
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        <a href="https://wkr.io/assets/refs/felt2011permission.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Permission Re-delegation: Attacks and Defenses
+      </div>
+      <div class="paper-venue">
+        USENIX Security Symposium 2011
+      </div>
+      <div class="paper-authors">
+        Adrienne Porter Felt, Helen Wang, Alexander Moshchuk, Steve Hanna,
+        Erika Chin
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        <a href="http://www.cs.berkeley.edu/~daw/papers/perms-webapps11.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        The Effectiveness of Application Permissions
+      </div>
+      <div class="paper-venue">
+        USENIX Conference on Web Application Development (WebApps) 2011
+      </div>
+      <div class="paper-authors">
+        Adrienne Porter Felt, Kate Greenwood, David Wagner
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        <a href="http://w2spconf.com/2011/papers/felt-mobilephishing.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Phishing on Mobile Devices
+      </div>
+      <div class="paper-venue">
+        Web 2.0 Security and Privacy (W2SP) 2011
+      </div>
+      <div class="paper-authors">
+        Adrienne Porter Felt, David Wagner
+      </div>
+    </div>
+
+    <div class="paper paper-favorites">
+      <div class="paper-title">
+        <a href="http://www.adambarth.com/papers/2010/barth-felt-saxena-boodman.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Protecting Browsers from Extension Vulnerabilities
+      </div>
+      <div class="paper-venue">
+        Network and Distributed System Security Symposium (NDSS) 2011
+      </div>
+      <div class="paper-authors">
+        Adam Barth, Adrienne Porter Felt, Prateek Saxena, Aaron Boodman
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        <a href="http://webblaze.cs.berkeley.edu/papers/diesel.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Diesel: Applying Privilege Separation to Database Access
+      </div>
+      <div class="paper-venue">
+        ACM Symposium on Information, Computer, and Communications Security
+        (AsiaCCS) 2011
+      </div>
+      <div class="paper-authors">
+        Adrienne Porter Felt, Matthew Finifter, Joel Weinberger, David Wagner
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        <a href="http://static.googleusercontent.com/media/research.google.com/en//pubs/archive/36273.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Object Views: Fine-Grained Sharing in Browsers
+      </div>
+      <div class="paper-venue">
+        International Conference on World Wide Web (WWW) 2010
+      </div>
+      <div class="paper-authors">
+        Leo Meyerovich, Adrienne Porter Felt, Mark S Miller
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        <a href="http://www.cs.virginia.edu/felt/privacybyproxy.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Privacy Protection for Social Networking APIs
+      </div>
+      <div class="paper-venue">
+        Web 2.0 Security and Privacy (W2SP) 2008
+      </div>
+      <div class="paper-authors">
+        Adrienne Porter Felt, David Evans
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        <a href="https://www.cs.virginia.edu/~weimer/p/weimer-socialnets2008-preprint.pdf">
+          <iron-icon class="paper-icons" icon="icons:link"></iron-icon>
+        </a>
+        Talking to Strangers Without Taking Their Candy: Isolating Proxied
+        Content
+      </div>
+      <div class="paper-venue">
+        Workshop on Social Network Systems (SNS) 2008
+      </div>
+      <div class="paper-authors">
+        Adrienne Porter Felt, Pieter Hooimeijer, David Evans, Westley Weimer
+      </div>
+    </div>
+  </div>
+
+  <!-- demos and code -->
+  <div class="content-section">
+    <a name="code"></a>
+    <div class="content-section-title">code & demos</div>
+
+    <!--
+    <div class="example-img-with-caption">
+      <a href="https://adrifelt.github.io/demos/bubble-demo.html">
+        <img class="example-img" src="img/bubble-on-load.png">
+      </a>
+      <br>
+      Permission requests on page load (Chrome)
+    </div>
+    -->
+
+    <div class="example-img-with-caption">
+      <a href="https://adrifelt.github.io/demos/all-permissions.html">
+        <img class="example-img" src="img/all-bubbles.png">
+      </a>
+      <br>
+      Trigger all possible permission requests (Chrome)
+    </div>
+
+    <div class="example-img-with-caption">
+      <a href="https://adrifelt.github.io/demos/disabled-demo.js">
+        <img class="example-img" src="img/permissionstatus.png">
+      </a>
+      <br>
+      How to reflect notification permission status in UI
+    </div>
+
+    <div class="example-img-with-caption">
+      <a href="https://wrong.host.badssl.com/">
+        <img class="example-img" src="img/ssl.png">
+      </a>
+      <br>
+      SSL error (Chrome)
+    </div>
+
+    <div class="example-img-with-caption">
+      <a href="http://malware.testing.google.test/testing/malware/">
+        <img class="example-img" src="img/malware.png">
+      </a>
+      <br>
+      Malware warning (Chrome)
+    </div>
+
+    <!--
+    <div class="example-img-with-caption">
+      <a href="http://phishing.safebrowsingtest.com/">
+        <img class="example-img" src="img/phishing.png">
+      </a>
+      <br>
+      Phishing warning (Chrome)
+    </div>
+    -->
+
+    <div class="example-img-with-caption">
+      <a href="https://chrome.google.com/webstore/detail/chrome-apps-extensions-de/ohmmkhmmmpcnpikjeljgnaoabkaalbgc?hl=en">
+        <img class="example-img" src="img/activitylog.png">
+      </a>
+      <br>
+      Monitor extension behavior (Chrome)
+    </div>
+  </div>
+
+  <!-- talks -->
+  <div class="content-section">
+    <a name="talks"></a>
+    <div class="content-section-title">talks</div>
+
+    <div class="example-img-with-caption">
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/_7XNJBc6ZVM" frameborder="0" allowfullscreen></iframe>
+      <br>
+      Building smart & sophisticated security warnings (Etsy Code as Craft)
+    </div>
+    
+    <div class="example-img-with-caption">
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/Lq1njPG-7_U" frameborder="0" allowfullscreen></iframe>
+      <br>
+      Making SSL warnings work (OWASP AppSec Cali)
+    </div>
+
+    <div class="example-img-with-caption">
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/3dAwZVsS8wo" frameborder="0" allowfullscreen></iframe>
+      <br>
+      Asking for superpowers: Chrome's permission model (Chrome dev summit)
+    </div>
+
+  </div>
+
+  <!-- contact -->
+  <div class="content-section">
+    <a name="contact"></a>
+    <div class="content-section-title">Contact</div>
+    <p>
+      <b>"I found a security bug in Chrome."</b> Awesome! You should file it in
+      the <a
+      href="https://code.google.com/p/chromium/issues/entry?template=Security%20Bug">Chromium
+      bug tracker</a> to get credit. Here are <a
+      href="https://www.chromium.org/Home/chromium-security/reporting-security-bugs">instructions</a>
+      on how to file a good security bug report. If you
+      think I should specifically look at it, ask for me in the comments and
+      someone can cc me.
+    </p>
+    <p>
+      <b>"Can you send me a copy of Stowaway?"</b> Stowaway is <i>extremely out
+      of date</i> and will not produce accurate results for a corpus of modern
+      Android apps. You should use <a
+      href="http://pscout.csl.toronto.edu/">PScout</a> instead, which has been
+      updated to handle modern apps. If you still want to see Stowaway for some
+      reason, e-mail me and I'll share a copy with you.
+    </p>
+    <p>
+      <b>E-mail:</b> felt <i>at</i> chromium <i>dot</i> org
+    </p>
+  </div>
+
+  <!-- social media -->
+  <div class="content-section">
+    <a name="twitter"></a>
+    <div class="content-section-title">On Twitter</div>
+      <div id="twitter-small-screen">
+        <a href="https://twitter.com/__apf__" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @__apf__</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+      </div>
+
+      <div id="twitter-large-screen">
+        <a class="twitter-timeline" href="https://twitter.com/__apf__" data-widget-id="622446900965277696">Tweets by @__apf__</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script> 
+      </div>
+
+  </div>
+</body>
+</html>
