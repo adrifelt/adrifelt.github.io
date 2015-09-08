@@ -13,47 +13,14 @@
   <link rel="import" href="bower_components/iron-icons/social-icons.html">
 
   <style is="custom-style">
-  html, body {
-    font-family: 'Lato', sans-serif;
-    margin: 0;
-    padding: 0;
+  /* General */
+  .anchor:before {
+    content: "";
+    display: block;
+    height: 150px;
+    margin: -150px 0 0;
   }
-  .box {
-    border: 0;
-    display: flex;
-    float: left;
-    height: 200px;
-    justify-content: center;
-    text-align: center;
-    width: 33.299%;
-  }
-  .box a {
-    color: white;
-    text-decoration: none;
-  }
-  .box-container {
-    background-color: #1A83BB;
-    overflow: auto;
-    text-align: center;
-    width: 100%;
-  }
-  .box-content {
-    align-self: center;
-    color: white;
-    font-family: 'Lato', sans-serif;
-    font-weight: 400;
-    font-size: 1.2em;
-    padding: 20px;
-  }
-  .box-icons {
-    --iron-icon-height: 1.5em;
-    --iron-icon-width: 1.5em;
-    padding-bottom: 7px;
-  }
-  .box-images {
-    height: 1.3em;
-    padding-bottom: 7px;
-  }
+
   .content-section {
     border-top: 1px #ccc solid;
     color: #414141;
@@ -75,10 +42,72 @@
     font-size: 1em;
     padding-bottom: 40px;
   }
-  .left {
+  .example-img-with-caption.left {
+    float: left;
+  }
+  html, body {
+    font-family: 'Lato', sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  p {
+    font-size: 1.15em;
+    line-height: 1.3em;
     text-align: left;
   }
-  .header {
+
+  /* Header */
+  header {
+    height: 700px;
+    left: 0;
+    overflow: hidden;
+    position: fixed;
+    transition: height 0.6s;
+      /*-moz-transition: height 0.8s;
+      -ms-transition: height 0.8s;
+      -o-transition: height 0.8s;
+      -webkit-transition: height 0.8s;*/
+    top: 0;
+    width: 100%;
+    z-index: 999;
+  }
+  header .box {
+    border: 0;
+    display: flex;
+    float: left;
+    height: 200px;
+    justify-content: center;
+    text-align: center;
+    width: 33.299%;
+  }
+  header .box a {
+    color: white;
+    text-decoration: none;
+  }
+  header .box-container {
+    background-color: #1A83BB;
+    overflow: auto;
+    text-align: center;
+    width: 100%;
+  }
+  header .box-content {
+    align-self: center;
+    color: white;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    font-size: 1.2em;
+    padding: 20px;
+  }
+  header .box-icons {
+    --iron-icon-height: 1.5em;
+    --iron-icon-width: 1.5em;
+    padding-bottom: 7px;
+  }
+  header .box-images {
+    height: 1.3em;
+    padding-bottom: 7px;
+  }
+  header .my-name {
     background-color: white;
     color: gray;
     font-family: 'Lato', sans-serif;
@@ -89,11 +118,38 @@
     text-align: center;
     width: 100%;
   }
-  p {
-    font-size: 1.15em;
-    line-height: 1.3em;
-    text-align: left;
+
+  header.smaller {
+    height: 100px;
   }
+  header.smaller .box {
+    height: 100px;
+    width: 16.666%;
+  }
+  header.smaller .box-content {
+    font-size: 1em;
+  }
+  header.smaller .box-words {
+    display: none;
+  }
+  header.smaller .my-name {
+    display: none;
+  }
+
+  #first {
+    height: 700px;
+  }
+  #first.smaller {
+    height: 300px;
+    transition: height 0.6s;
+  }
+
+  /* About me */
+  #photo-circle {
+    width: 180px;
+  }
+
+  /* Publication list */
   .paper {
     display: none;
     text-align: left;
@@ -130,9 +186,8 @@
   .paper-title {
     font-size: 1.15em;
   }
-  #photo-circle {
-    width: 180px;
-  }
+
+  /* Twitter */
   #twitter-small-screen {
     display: none;
   }
@@ -172,6 +227,19 @@
     }
   }
 
+  function scrollHeader() {
+    var distanceY = window.pageYOffset || document.documentElement.scrollTop;
+    var shrinkThreshold = 100;
+    var header = document.querySelector('header');
+    if (distanceY > shrinkThreshold) {
+      header.classList.add('smaller');
+      $('first').classList.add('smaller');
+    } else if (header.classList.contains('smaller')) {
+      header.classList.remove('smaller');
+      $('first').classList.remove('smaller');
+    }
+  }
+
   function setupPage() {
     // Set up the box colors.
     var colors =
@@ -182,8 +250,9 @@
       boxes[i].style.backgroundColor = colors[i % colors.length];
     }
 
-    // Set up button event listeners.
+    // Set up event listeners.
     $("full-list-button").addEventListener('click', togglePaperList);
+    window.addEventListener('scroll', scrollHeader);
   }
   document.addEventListener('DOMContentLoaded', setupPage);
 
@@ -191,96 +260,95 @@
 </head>
 <body unresolved>
 
-  <!-- header -->
-  <div class="header">
-    adrienne porter felt
-  </div>
+  <header>
+    <!-- My name -->
+    <div class="my-name">
+      adrienne porter felt
+    </div>
 
-  <!-- navigation bar -->
-  <div class="box-container">
-    <div class="box">
-      <div class="box-content">
-        <a href="#about">
-          <iron-icon class="box-icons" icon="social:person"></iron-icon>
-          <br>
-          ABOUT ME
-        </a>
+    <!-- Nav bar -->
+    <div class="box-container">
+      <div class="box">
+        <div class="box-content">
+          <a href="#about">
+            <iron-icon class="box-icons" icon="social:person"></iron-icon>
+            <div class="box-words">ABOUT ME</div>
+          </a>
+        </div>
       </div>
-    </div>
-    <div class="box">
-      <div class="box-content">
-        <a href="#publications">
-          <iron-icon class="box-icons" icon="description"></iron-icon>
-          <br>
-          PUBLICATIONS
-        </a>
+      <div class="box">
+        <div class="box-content">
+          <a href="#publications">
+            <iron-icon class="box-icons" icon="description"></iron-icon>
+            <div class="box-words">PUBLICATIONS</div>
+          </a>
+        </div>
       </div>
-    </div>
-    <div class="box">
-      <div class="box-content">
-        <a href="#code">
-          <iron-icon class="box-icons" icon="code"></iron-icon>
-          <br>
-          CODE & DEMOS
-        </a>
+      <div class="box">
+        <div class="box-content">
+          <a href="#code">
+            <iron-icon class="box-icons" icon="code"></iron-icon>
+            <div class="box-words">CODE & DEMOS</div>
+          </a>
+        </div>
       </div>
-    </div>
-    <div class="box">
-      <div class="box-content">
-        <a href="#talks">
-          <iron-icon class="box-icons" icon="notification:ondemand-video"></iron-icon>
-          <br>
-          TALKS
-        </a>
+      <div class="box">
+        <div class="box-content">
+          <a href="#talks">
+            <iron-icon class="box-icons" icon="notification:ondemand-video"></iron-icon>
+            <div class="box-words">TALKS</div>
+          </a>
+        </div>
       </div>
-    </div>
-    <div class="box">
-      <div class="box-content">
-        <a href="#contact">
-          <iron-icon class="box-icons" icon="communication:email"></iron-icon>
-          <br>
-          CONTACT
-        </a>
+      <div class="box">
+        <div class="box-content">
+          <a href="#contact">
+            <iron-icon class="box-icons" icon="communication:email"></iron-icon>
+            <div class="box-words">CONTACT</div>
+          </a>
+        </div>
       </div>
-    </div>
-    <div class="box">
-      <div class="box-content">
-        <a href="#twitter">
-          <img src="img/twitter.png" class="box-images"/>
-          <br>
-          ON TWITTER
-        </a>
+      <div class="box">
+        <div class="box-content">
+          <a href="#twitter">
+            <img src="img/twitter.png" class="box-images"/>
+            <div class="box-words">ON TWITTER</div>
+          </a>
+        </div>
       </div>
+      <div style="clear: all"></div>
     </div>
-    <div style="clear: all"></div>
-  </div>
+  </header>
+
+  <div id="first"> </div>
 
   <!-- about me -->
   <div class="content-section">
-    <a name="about"></a>
+    <a class="anchor" name="about"></a>
     <div class="content-section-title">About Me</div>
     <img src="img/felt-photo-border.png" id="photo-circle"/>
     <p>
-      I'm a software engineer at Google, on the Chrome security team. My goal
-      is to make security an intuitive, helpful experience for non-experts. I'm
-      working on improving the user experience of HTTPS and web permissions.
-      You can find my current job title etc. on <a
-      href="https://www.linkedin.com/pub/adrienne-porter-felt/23/762/ab7">LinkedIn</a>.
+      I'm a software engineer on the Google Chrome security team. My job is to
+      make security an intuitive, helpful experience for non-experts.
+      Currently, I'm focused on increasing the adoption, usage, and quality of
+      HTTPS. I'm also trying to create a web permission system that meshes with
+      Android and scales up to lots of new APIs.
     </p>
     <p>
-      I'm a recovering academic who tries to blend research and engineering.
-      Previously, I was a research scientist on the Google security research
-      team. I received a PhD in CS from UC Berkeley, where I did my <a
+      I have a research background, and I try to blend research with
+      engineering. Before joining the Chrome team, I was a research scientist
+      on the Google security research team. I received a PhD in CS from UC
+      Berkeley, where I did my <a
       href="http://www.eecs.berkeley.edu/Pubs/TechRpts/2012/EECS-2012-185.pdf">dissertation</a>
-      on permission models. I still publish (albeit less often) and sit on
-      program committees (e.g., USENIX 2013-2015, SOUPS 2015, Oakland 2016).
+      on permission models. As a graduate student, I received the Anita Borg
+      scholarship, Facebook Fellowship, and NSF graduate research fellowship.
     </p>
   </div>
 
   <!-- publications -->
   <div class="content-section">
-    <a name="publications"></a>
-    <div class="content-section-title">Publications</div>
+    <a class="anchor" name="publications"></a>
+    <div class="content-section-title">(Some) Publications</div>
 
     <paper-button tabindex="0" toggles id="full-list-button">
       Show Full List
@@ -294,7 +362,7 @@
         Improving SSL Warnings: Comprehension and Adherence
       </div>
       <div class="paper-venue">
-        ACM CHI Conference on Human Factors in Computing Systems 2015
+        ACM CHI Conference on Human Factors in Computing Systems (CHI) 2015
       </div>
       <div class="paper-authors">
         Adrienne Porter Felt, Alex Ainslie, Robert W. Reeder, Sunny Consolvo,
@@ -326,7 +394,7 @@
         Experimenting At Scale With Google Chrome's SSL Warning
       </div>
       <div class="paper-venue">
-        ACM CHI Conference on Human Factors in Computing Systems 2014
+        ACM CHI Conference on Human Factors in Computing Systems (CHI) 2014
         (<iron-icon class="paper-icons" icon="icons:star-border"></iron-icon>
         Honorable mention)
       </div>
@@ -653,8 +721,8 @@
 
   <!-- demos and code -->
   <div class="content-section">
-    <a name="code"></a>
-    <div class="content-section-title">code & demos</div>
+    <a class="anchor" name="code"></a>
+    <div class="content-section-title">See my chrome code</div>
 
     <!--
     <div class="example-img-with-caption">
@@ -665,61 +733,53 @@
       Permission requests on page load (Chrome)
     </div>
     -->
-
-    <div class="example-img-with-caption">
-      <a href="https://adrifelt.github.io/demos/all-permissions.html">
-        <img class="example-img" src="img/all-bubbles.png">
-      </a>
-      <br>
-      Trigger all possible permission requests (Chrome)
-    </div>
-
-    <div class="example-img-with-caption">
+    <!--<div class="example-img-with-caption">
       <a href="https://adrifelt.github.io/demos/disabled-demo.js">
         <img class="example-img" src="img/permissionstatus.png">
       </a>
       <br>
       How to reflect notification permission status in UI
-    </div>
-
-    <div class="example-img-with-caption">
-      <a href="https://wrong.host.badssl.com/">
-        <img class="example-img" src="img/ssl.png">
-      </a>
-      <br>
-      SSL error (Chrome)
-    </div>
-
-    <div class="example-img-with-caption">
-      <a href="http://malware.testing.google.test/testing/malware/">
-        <img class="example-img" src="img/malware.png">
-      </a>
-      <br>
-      Malware warning (Chrome)
-    </div>
-
-    <!--
-    <div class="example-img-with-caption">
+    </div>-->
+    <!--<div class="example-img-with-caption">
       <a href="http://phishing.safebrowsingtest.com/">
         <img class="example-img" src="img/phishing.png">
       </a>
       <br>
-      Phishing warning (Chrome)
+      Social engineering warning
+    </div>-->
+
+    <div class="example-img-with-caption left">
+      <a href="https://wrong.host.badssl.com/">
+        <img class="example-img" src="img/ssl.png"></a>
+      <br>
+      SSL warning
     </div>
-    -->
+
+    <div class="example-img-with-caption">
+      <a href="http://malware.testing.google.test/testing/malware/">
+        <img class="example-img" src="img/malware.png"></a>
+      <br>
+      Malware warning
+    </div>
+
+    <div class="example-img-with-caption left">
+      <a href="https://adrifelt.github.io/demos/all-permissions.html">
+        <img class="example-img" src="img/all-bubbles.png"></a>
+      <br>
+      Permission request bubbles (desktop)
+    </div>
 
     <div class="example-img-with-caption">
       <a href="https://chrome.google.com/webstore/detail/chrome-apps-extensions-de/ohmmkhmmmpcnpikjeljgnaoabkaalbgc?hl=en">
-        <img class="example-img" src="img/activitylog.png">
-      </a>
+        <img class="example-img" src="img/activitylog.png"></a>
       <br>
-      Monitor extension behavior (Chrome)
+      Monitor extension behavior
     </div>
   </div>
 
   <!-- talks -->
   <div class="content-section">
-    <a name="talks"></a>
+    <a class="anchor" name="talks"></a>
     <div class="content-section-title">talks</div>
 
     <div class="example-img-with-caption">
@@ -744,25 +804,22 @@
 
   <!-- contact -->
   <div class="content-section">
-    <a name="contact"></a>
+    <a class="anchor" name="contact"></a>
     <div class="content-section-title">Contact</div>
     <p>
-      <b>"I found a security bug in Chrome."</b> Awesome! You should file it in
-      the <a
-      href="https://code.google.com/p/chromium/issues/entry?template=Security%20Bug">Chromium
-      bug tracker</a> to get credit. Here are <a
-      href="https://www.chromium.org/Home/chromium-security/reporting-security-bugs">instructions</a>
-      on how to file a good security bug report. If you
-      think I should specifically look at it, ask for me in the comments and
-      someone can cc me.
+      <b>"Can you send me a copy of Stowaway?"</b> Stowaway is extremely out of
+      date and will not produce accurate results for a corpus of modern Android
+      apps. You should use <a href="http://pscout.csl.toronto.edu/">PScout</a>
+      instead, which has been updated to handle modern apps. If you still want
+      to see Stowaway for historical reasons, e-mail me and I'll share a copy
+      with you.
     </p>
     <p>
-      <b>"Can you send me a copy of Stowaway?"</b> Stowaway is <i>extremely out
-      of date</i> and will not produce accurate results for a corpus of modern
-      Android apps. You should use <a
-      href="http://pscout.csl.toronto.edu/">PScout</a> instead, which has been
-      updated to handle modern apps. If you still want to see Stowaway for some
-      reason, e-mail me and I'll share a copy with you.
+      <b>Filing bugs:</b> Use the <a
+      href="https://code.google.com/p/chromium/issues/entry?template=Security%20Bug">Chromium
+      bug tracker</a>. Here are <a
+      href="https://www.chromium.org/Home/chromium-security/reporting-security-bugs">instructions</a>
+      on how to file a good security bug report.
     </p>
     <p>
       <b>E-mail:</b> felt <i>at</i> chromium <i>dot</i> org
@@ -771,8 +828,9 @@
 
   <!-- social media -->
   <div class="content-section">
-    <a name="twitter"></a>
+    <a class="anchor" name="twitter"></a>
     <div class="content-section-title">On Twitter</div>
+      <p style="text-align:center"><a href="https://twitter.com/__apf__">__apf__</a></p>
       <div id="twitter-small-screen">
         <a href="https://twitter.com/__apf__" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @__apf__</a>
         <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
@@ -782,7 +840,7 @@
         <a class="twitter-timeline" href="https://twitter.com/__apf__" data-widget-id="622446900965277696">Tweets by @__apf__</a>
         <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script> 
       </div>
-
   </div>
+
 </body>
 </html>
