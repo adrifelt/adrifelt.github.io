@@ -47,6 +47,7 @@
 <button id="video">Video</button>
 <button id="audio+video">Audio + Video</button>
 <button id="midi">MIDI</button>
+<button id="eme">Encrypted Media (EME)</button>
 
 <hr>
 
@@ -57,6 +58,19 @@
 
 <button id="copy">Copy</button>
 <button id="download">Auto Download</button>
+
+
+<br><br><br>
+<p>Notes:</p>
+<table>
+<tr><td>Encrypted Media (EME)</td>
+  <td>May succeed without permission depending on the implementation.<br>
+    Attempts to use known key systems. (See the source for the list of supported key systems.)
+    <!-- Clear Key is not supported because it is not expected to require permissions. -->
+  </td>
+</tr>
+</table>
+
 
 <!--
   TODO:
@@ -169,6 +183,58 @@ var register = {
       displayOutcome("midi", "success"),
       displayOutcome("midi", "error")
     );
+  },
+  "eme": function() {
+    // https://w3c.github.io/encrypted-media/#requestMediaKeySystemAccess
+    // Tries multiple configuration per key system. The configurations are in
+    // descending order of privileges such that a supported permission-requiring
+    // configuration should be attempted before a configuration that does not
+    // require permissions.
+
+    var knownKeySystems = [
+      "com.example.somesystem",  // Ensure no real system is the first tried.
+      "com.widevine.alpha",
+      "com.microsoft.playready",
+      "com.adobe.primetime",
+      "com.apple.fps.2_0",
+      "com.apple.fps",
+      "com.apple.fps.1_0",
+      "com.example.somesystem"  // Ensure no real system is the last tried.
+    ];
+    var tryKeySystem = function(keySystem) {
+      navigator.requestMediaKeySystemAccess(
+        keySystem,
+        [
+          { distinctiveIdentifier: "required",
+            persistentState: "required",
+            label: "'distinctiveIdentifier' and 'persistentState' required"
+          },
+          { distinctiveIdentifier: "required",
+            label: "'distinctiveIdentifier' required"
+          },
+          { persistentState: "required",
+            label: "'persistentState' required"
+          },
+          { label: "empty" }
+        ]
+      ).then(
+        function (mediaKeySystemAccess) {
+          displayOutcome("eme", "success")(
+            "Key System: " + keySystem,
+            "Configuration: " + mediaKeySystemAccess.getConfiguration().label,
+            mediaKeySystemAccess);
+        },
+        function (error) {
+          if (knownKeySystems.length > 0)
+            return tryKeySystem(knownKeySystems.shift());
+
+          displayOutcome("eme", "error")(
+            error,
+            error.name == "NotSupportedError" ? "No known key systems supported or permitted." : "");
+        }
+      );
+    };
+    tryKeySystem(knownKeySystems.shift());
   },
   "copy": (function() {
     var interceptCopy = false;
