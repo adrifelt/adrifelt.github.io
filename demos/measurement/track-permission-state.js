@@ -29,7 +29,7 @@ apiWatcher.compatCheck = function() {
   }
 
   if (!apiWatcher.queryAvailable_)
-    $('status-permissions').innerText = 'unavailable';
+    uiHelper.setPermissionStatus('unavailable');
   if (!apiWatcher.revokeAvailable_)
     $('revoke-button').disabled = true;
 
@@ -48,17 +48,46 @@ document.addEventListener('DOMContentLoaded', apiWatcher.compatCheck);
 
 var callbackWatcher = callbackWatcher || {};
 
+callbackWatcher.Status = {
+  UNKNOWN: 0,
+  REQUESTED: 1,
+  USER_GRANTED: 2,
+  USER_DENIED: 3,
+  AUTO_GRANTED: 4,
+  AUTO_DENIED: 5,
+};
+
+callbackWatcher.THRESHOLD = 5;  // Milliseconds
+callbackWatcher.timestamp_ = 0;
+
 callbackWatcher.countSuccess = function() {
   console.log("Callback tracking: user granted permission");
+  uiHelper.setCallbackStatus(callbackWatcher.Status.USER_GRANTED);
 }
 
 callbackWatcher.countFailure = function() {
-  console.log("Callback tracking: user denied permission");
+  var delta = Date.now() - callbackWatcher.timestamp_;
+  if (delta > callbackWatcher.THRESHOLD) {
+    uiHelper.setCallbackStatus(callbackWatcher.Status.USER_DENIED);
+    console.log("Callback tracking: user denied permission (" + delta + "ms)");
+  } else {
+    uiHelper.setCallbackStatus(callbackWatcher.Status.AUTO_DENIED);
+    console.log("Callback tracking: browser auto-denied permission (" +
+                delta + "ms)");
+  }
+  timestamp_ = 0;
 }
 
 callbackWatcher.countInvocation = function() {
   console.log("Callback tracking: requesting permission");
+  uiHelper.setCallbackStatus(callbackWatcher.Status.REQUESTED);
+  callbackWatcher.timestamp_ = Date.now();
 }
+
+callbackWatcher.setup = function() {
+  uiHelper.setCallbackStatus(callbackWatcher.Status.UNKNOWN);
+}
+document.addEventListener('DOMContentLoaded', callbackWatcher.setup);
 
 // *****************************************************************************
 // REQUEST HANDLER
@@ -72,22 +101,33 @@ requestHandler.STORAGE_KEY = "request";
 requestHandler.STORAGE_LOAD = "onload";
 requestHandler.STORAGE_CLICK = "click";
 
+/**
+ * A wrapper to invoke both the apiWatcher and callbackWatcher callbacks.
+ */
 requestHandler.successCallback = function() {
   callbackWatcher.countSuccess();
 }
 
+/**
+ * A wrapper to invoke both the apiWatcher and callbackWatcher callbacks.
+ */
 requestHandler.failureCallback = function() {
   callbackWatcher.countFailure();
 }
 
+/**
+ * Tell the callbackWatcher and apiWatcher that we're about to invoke the
+ * geolocation API.
+ */
 requestHandler.notifyInvocation = function() {
   callbackWatcher.countInvocation();
 }
 
+// Try to read geolocation.
 requestHandler.initiateRequest = function() {
   requestHandler.notifyInvocation();
   navigator.geolocation.getCurrentPosition(
-      requestHandler.successCallback, requestHandler.errorCallback);
+      requestHandler.successCallback, requestHandler.failureCallback);
 }
 
 /**
@@ -128,6 +168,31 @@ document.addEventListener('DOMContentLoaded', requestHandler.setup);
 // *****************************************************************************
 
 var uiHelper = uiHelper || {};
+
+uiHelper.setPermissionStatus = function(message) {
+  $('status-permissions').innerText = message;
+}
+
+/**
+ * Convert the callback status to a human-readable string, and display it.
+ */
+uiHelper.setCallbackStatus = function(message) {
+  var humanString = "unavailable";
+  if (message == callbackWatcher.Status.UNKNOWN)
+    humanString = "unknown";
+  else if (message == callbackWatcher.Status.REQUESTED)
+    humanString = "requested";
+  else if (message == callbackWatcher.Status.USER_GRANTED)
+    humanString = "user granted";
+  else if (message == callbackWatcher.Status.USER_DENIED)
+    humanString = "user denied";
+  else if (message == callbackWatcher.Status.AUTO_GRANTED)
+    humanString = "auto granted";
+  else if (message == callbackWatcher.Status.AUTO_DENIED)
+    humanString = "auto denied";
+
+  $('status-callbacks').innerText = humanString;
+}
 
 /**
  * Update the feature status pane.
