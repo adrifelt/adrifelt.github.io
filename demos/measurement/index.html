@@ -1,0 +1,56 @@
+<html>
+
+<head>
+  <title>Permission analytics test page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700"
+        rel="stylesheet"  type="text/css">
+  <link href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.blue_grey-yellow.min.css"
+        rel="stylesheet" >
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet" >
+  <link href="simple.css" rel="stylesheet" type="text/css">
+
+  <script src="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.min.js"></script>
+  <script src="track-permission-state.js"></script>
+</head>
+
+<body>
+  <!-- Header -->
+  <div id="title">
+    Analytics demo
+  </div>
+  
+  <div id="status-container">
+    Permissions API: <span id="status-permissions">not prompted</span>
+    <br>
+    Callback tracking: <span id="status-permissions">not prompted</span>
+  </div>
+
+  <div id="buttons-container">
+    <button class="demo-buttons mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-js-ripple-effect"
+            id="request-button">
+      Request
+    </button>
+    <br>
+    <button class="demo-buttons mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect"
+            id="request-onload-button">
+      Request onload
+    </button>
+    <br>
+    <button class="demo-buttons mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect"
+            id="revoke-button">
+      Revoke
+    </button>
+  </div>
+
+  <div id="support-pane">
+    navigator.permissions.query: <span id="support-query"></span><br>
+    navigator.permissions.request: <span id="support-request"></span><br>
+    navigator.permissions.revoke: <span id="support-revoke"></span><br>
+    localStorage: <span id="support-storage"></span>
+  </div>
+
+</body>
+</html>

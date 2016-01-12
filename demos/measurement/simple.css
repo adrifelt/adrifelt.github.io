@@ -1,0 +1,68 @@
+body {
+  background-color: #37474F;
+  color: white;
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+}
+
+.demo-buttons {
+  margin: 6px;
+  width: 300px;
+}
+
+.feature-supported {
+  color: #607D8B;
+}
+
+.feature-unsupported {
+  color: #b3a000;
+}
+
+#onload-toggle-container {
+  max-width: 400px;
+  margin: auto;
+  text-align: center;
+}
+
+#status-container {
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 24px;
+  padding-bottom: 30px;
+}
+
+#support-pane {
+  background-color: #263238;
+  color: #727272;
+  font-size: small;
+  margin: 50px auto 10px auto;
+  padding: 10px;
+  width: 400px;
+}
+
+#title {
+  margin: auto;
+  padding: 100px 0 60px 0;
+  font-size: 50px;
+  font-weight: 300;
+  line-height: 60px;
+  text-transform: uppercase;
+}
+
+/* Shrink for a mall mobile screen. */
+@media (max-width: 400px) and (max-height: 600px),
+(max-width: 600px) and (max-height: 400px) {
+  .demo-buttons {
+    width: 80%;
+  }
+
+  #support-pane {
+    width: 80%;
+  }
+
+  #title {
+    padding: 60px 0 30px 0;
+    font-size: 34px;
+    line-height: 40px;
+  }
+}
