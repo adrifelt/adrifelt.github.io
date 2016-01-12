@@ -65,6 +65,10 @@ callbackWatcher.countSuccess = function() {
   uiHelper.setCallbackStatus(callbackWatcher.Status.USER_GRANTED);
 }
 
+/**
+ * Record the failure, and check to see whether it was above or below the
+ * user-response timing threshold.
+ */
 callbackWatcher.countFailure = function() {
   var delta = Date.now() - callbackWatcher.timestamp_;
   if (delta > callbackWatcher.THRESHOLD) {
@@ -175,20 +179,21 @@ uiHelper.setPermissionStatus = function(message) {
 
 /**
  * Convert the callback status to a human-readable string, and display it.
+ * @param(callbackWatcher.Status) newStatus The desired status.
  */
-uiHelper.setCallbackStatus = function(message) {
+uiHelper.setCallbackStatus = function(newStatus) {
   var humanString = "unavailable";
-  if (message == callbackWatcher.Status.UNKNOWN)
+  if (newStatus == callbackWatcher.Status.UNKNOWN)
     humanString = "unknown";
-  else if (message == callbackWatcher.Status.REQUESTED)
+  else if (newStatus == callbackWatcher.Status.REQUESTED)
     humanString = "requested";
-  else if (message == callbackWatcher.Status.USER_GRANTED)
+  else if (newStatus == callbackWatcher.Status.USER_GRANTED)
     humanString = "user granted";
-  else if (message == callbackWatcher.Status.USER_DENIED)
+  else if (newStatus == callbackWatcher.Status.USER_DENIED)
     humanString = "user denied";
-  else if (message == callbackWatcher.Status.AUTO_GRANTED)
+  else if (newStatus == callbackWatcher.Status.AUTO_GRANTED)
     humanString = "auto granted";
-  else if (message == callbackWatcher.Status.AUTO_DENIED)
+  else if (newStatus == callbackWatcher.Status.AUTO_DENIED)
     humanString = "auto denied";
 
   $('status-callbacks').innerText = humanString;
