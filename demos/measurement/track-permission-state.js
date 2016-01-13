@@ -1,24 +1,32 @@
 // Copyright 2016 Google. All rights reserved.
 // Author: Adrienne Porter Felt <felt@chromium.org>
 
+// *****************************************************************************
 // This demo illustrates how to gather geolocation permission analytics. It uses
 // two methods so that you can compare how well they work:
 //
 // (1) The callbackWatcher uses the geolocation error/success callbacks and
 //     their values to determine what the permission state is.
 // (2) The apiWatcher additionally uses the Permissions API, which is available
-//     in newer versions of Chrome and Firefox. It can identify more states than
-//     the callbackWatcher.
+//     in newer versions of Chrome and Firefox.
+//
+// #2 is the recommended way to collect permission analytics, when supported.
 //
 // The requestDriver drives the demo by invoking the geolocation API and
 // passing the callback results on to the apiWatcher and callbackWatcher.
+// *****************************************************************************
 
 // *****************************************************************************
 // PERMISSIONS API WATCHER
 // These methods track the permission state using the Permissions API.
+// To track the user's flow, check the permission status several times:
+//   -- Initially (on page load, or otherwise prior to the geolocation call)
+//   -- In the error callback
+//   -- When the page navigates
 // *****************************************************************************
 var apiWatcher = {};
 
+// The apiWatcher can identify many more situations than the callbackWatcher.
 apiWatcher.Status = {
   UNAVAILABLE: 0,           // Permission API not supported
   NOT_YET_PROMPTED: 1,      // User hasn't been asked about geolocation yet
@@ -29,8 +37,12 @@ apiWatcher.Status = {
   USER_DENIED: 6,           // User denied the permission after seeing a prompt
   USER_DISMISSED: 7,        // User closed the prompt without responding
   BROWSER_BLOCKED: 8,       // Browser blocked; it didn't show permission dialog
-                            // or use prior user preferences.
-  
+                            // or check prior user preferences
+  SETTINGS_GRANTED: 9,      // User enabled the permission from within settings
+  SETTINGS_DENIED: 10,      // User disabled the permission from within settings
+  SETTINGS_DEFAULT: 11,     // User reset the permission to 'prompt' next time
+  FAST_NAVIGATE: 12,        // User navigated very quickly after prompt shown
+  SLOW_NAVIGATE: 13,        // User navigated without making a decision
 };
 
 // Used to differentiate between an automated and human response to a dialog, in
@@ -113,7 +125,7 @@ apiWatcher.failureCallback = function() {
 
   apiWatcher.pending_ = false;
 
-  // The user didn't actually see a permission dialog.
+  // The user didn't actually see a permission dialog, so don't record anything.
   if (apiWatcher.initialState_ != 'prompt')
     return;
 
@@ -128,8 +140,6 @@ apiWatcher.failureCallback = function() {
         statusLog.recordApiStatus(apiWatcher.Status.BROWSER_BLOCKED, delta);
       else if (state == 'denied')
         statusLog.recordApiStatus(apiWatcher.Status.USER_DENIED, delta);
-
-      console.log(state + " " + delta);
     });
 }
 
@@ -149,6 +159,22 @@ apiWatcher.recordInvocation = function() {
   apiWatcher.pending_ = true;
   apiWatcher.timestamp_ = Date.now();
 }
+
+/**
+ * Record when the user navigates without making a permission decision.
+ */
+apiWatcher.checkBeforeNavigate = function() {
+  if (!apiWatcher.pending_ || !apiWatcher.queryAvailable_)
+    return;
+
+  var delta = Date.now() - apiWatcher.timestamp_;
+  if (delta > apiWatcher.THRESHOLD)
+    statusLog.recordCallbackStatus(apiWatcher.Status.FAST_NAVIGATE, delta);
+  else
+    statusLog.recordCallbackStatus(apiWatcher.Status.SLOW_NAVIGATE, delta);
+}
+document.addEventListener('beforeunload', apiWatcher.checkBeforeNavigate);
+
 
 /**
  * Update the demo UI based on which API methods are available.
@@ -236,14 +262,8 @@ callbackWatcher.recordInvocation = function() {
 }
 
 /**
- * We can't know the initial status until actually trying to invoke the
- * geolocation function, so set the UI to initially say "unknown".
+ * Record when the user navigates without making a permission decision.
  */
-callbackWatcher.setup = function() {
-  statusLog.recordCallbackStatus(callbackWatcher.Status.UNKNOWN);
-}
-document.addEventListener('DOMContentLoaded', callbackWatcher.setup);
-
 callbackWatcher.checkBeforeNavigate = function() {
   if (!callbackWatcher.pending_)
     return;
@@ -254,6 +274,16 @@ callbackWatcher.checkBeforeNavigate = function() {
   else
     statusLog.recordCallbackStatus(callbackWathcer.Status.SLOW_NAVIGATE, delta);
 }
+document.addEventListener('beforeunload', callbackWatcher.checkBeforeNavigate);
+
+/**
+ * We can't know the initial status until actually trying to invoke the
+ * geolocation function, so set the UI to initially say "unknown".
+ */
+callbackWatcher.setup = function() {
+  statusLog.recordCallbackStatus(callbackWatcher.Status.UNKNOWN);
+}
+document.addEventListener('DOMContentLoaded', callbackWatcher.setup);
 
 // *****************************************************************************
 // REQUEST HANDLER
@@ -382,6 +412,16 @@ statusLog.recordApiStatus = function(newStatus, delta) {
     humanString = 'user denied';
   else if (newStatus == apiWatcher.Status.BROWSER_BLOCKED)
     humanString = 'browser blocked';
+  else if (newStatus == apiWatcher.Status.SETTINGS_GRANTED)
+    humanString = 'user granted in settings';
+  else if (newStatus == apiWatcher.Status.SETTINGS_DENIED)
+    humanString = 'user denied in settings';
+  else if (newStatus == apiWatcher.Status.SETTINGS_DEFAULT)
+    humanString = 'user cleared in settings';
+  else if (newStatus == apiWatcher.Status.FAST_NAVIGATE)
+    humanString = 'navigated too quickly to respond';
+  else if (newStatus == apiWatcher.Status.SLOW_NAVIGATE)
+    humanString = 'navigated without responding';
 
   var deltaString = '';
   if (delta) deltaString = ' (' + delta + 'ms)';
@@ -405,12 +445,14 @@ statusLog.recordCallbackStatus = function(newStatus, delta) {
     humanString = 'user granted';
   else if (newStatus == callbackWatcher.Status.USER_DENIED)
     humanString = 'user denied';
+  else if (newStatus == callbackWatcher.Status.USER_DISMISSED)
+    humanString = 'user dismissed';
   else if (newStatus == callbackWatcher.Status.AUTO_GRANTED)
     humanString = 'auto granted';
   else if (newStatus == callbackWatcher.Status.AUTO_DENIED)
     humanString = 'auto denied';
   else if (newStatus == callbackWatcher.Status.FAST_NAVIGATE)
-    humanString = 'navigated too quickly for responding';
+    humanString = 'navigated too quickly to respond';
   else if (newStatus == callbackWatcher.Status.SLOW_NAVIGATE)
     humanString = 'navigated without responding';
 
