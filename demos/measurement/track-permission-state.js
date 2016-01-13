@@ -168,15 +168,14 @@ apiWatcher.recordInvocation = function() {
  * @return {null} To make the method execute in Chrome.
  */
 apiWatcher.checkBeforeNavigate = function() {
-  console.log(3+4);
   if (!apiWatcher.pending_ || !apiWatcher.queryAvailable_)
     return;
-  console.log(1+2);
+
   var delta = Date.now() - apiWatcher.timestamp_;
-  if (delta > apiWatcher.THRESHOLD)
-    statusLog.recordCallbackStatus(apiWatcher.Status.FAST_NAVIGATE, delta);
+  if (delta < apiWatcher.THRESHOLD)
+    statusLog.recordApiStatus(apiWatcher.Status.FAST_NAVIGATE, delta);
   else
-    statusLog.recordCallbackStatus(apiWatcher.Status.SLOW_NAVIGATE, delta);
+    statusLog.recordApiStatus(apiWatcher.Status.SLOW_NAVIGATE, delta);
   return null;
 }
 window.addEventListener('beforeunload', apiWatcher.checkBeforeNavigate);
@@ -275,7 +274,7 @@ callbackWatcher.checkBeforeNavigate = function() {
     return;
 
   var delta = Date.now() - callbackWatcher.timestamp_;
-  if (delta > callbackWatcher.THRESHOLD)
+  if (delta < callbackWatcher.THRESHOLD)
     statusLog.recordCallbackStatus(callbackWatcher.Status.FAST_NAVIGATE, delta);
   else
     statusLog.recordCallbackStatus(callbackWathcer.Status.SLOW_NAVIGATE, delta);
