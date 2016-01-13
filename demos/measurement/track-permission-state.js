@@ -132,6 +132,7 @@ apiWatcher.recordPermissionChange = function() {
     statusLog.recordApiStatus(apiWatcher.Status.SETTINGS_DENIED);
   else if (state == 'prompt')
     statusLog.recordApiStatus(apiWatcher.Status.SETTINGS_DEFAULT);
+  apiWatcher.initialState_ = state;
 }
 
 /**
@@ -145,7 +146,9 @@ apiWatcher.successCallback = function() {
     statusLog.recordApiStatus(apiWatcher.Status.USER_GRANTED);
   else if (apiWatcher.initialState_ == 'granted')
     statusLog.recordApiStatus(apiWatcher.Status.GRANTED_FROM_STORAGE);
+
   apiWatcher.pending_ = false;
+  apiWatcher.initialState_ = 'granted';
 }
 
 /**
@@ -181,12 +184,14 @@ apiWatcher.failureCallback = function(errorCode) {
     function(permissionStatus) {
       var state = permissionStatus.state || permissionStatus.status;
 
-      if (state == 'prompt' && delta > apiWatcher.THRESHOLD)
+      if (state == 'prompt' && delta > apiWatcher.THRESHOLD) {
         statusLog.recordApiStatus(apiWatcher.Status.USER_DISMISSED, delta);
-      else if (state == 'prompt' && delta <= apiWatcher.THRESHOLD)
+      } else if (state == 'prompt' && delta <= apiWatcher.THRESHOLD) {
         statusLog.recordApiStatus(apiWatcher.Status.BROWSER_BLOCKED, delta);
-      else if (state == 'denied')
+      } else if (state == 'denied') {
         statusLog.recordApiStatus(apiWatcher.Status.USER_DENIED, delta);
+        apiWatcher.initialState_ = 'denied';
+      }
     });
 }
 
