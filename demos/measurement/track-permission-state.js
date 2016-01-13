@@ -31,18 +31,20 @@ apiWatcher.Status = {
   UNAVAILABLE: 0,           // Permission API not supported
   NOT_YET_PROMPTED: 1,      // User hasn't been asked about geolocation yet
   REQUESTED: 2,             // Permission decision is pending
-  INITALLY_GRANTED: 3,      // Permission was previously set to 'granted'
-  INITIALLY_DENIED: 4,      // Permission was previously set to 'denied'
-  USER_GRANTED: 5,          // User granted the permission after seeing a prompt
-  USER_DENIED: 6,           // User denied the permission after seeing a prompt
-  USER_DISMISSED: 7,        // User closed the prompt without responding
-  BROWSER_BLOCKED: 8,       // Browser blocked; it didn't show permission dialog
+  STARTING_GRANTED: 3,      // Permission was previously set to 'granted'
+  STARTING_DENIED: 4,       // Permission was previously set to 'denied'
+  GRANTED_FROM_STORAGE: 5,  // Call succeeded because STARTING_GRANTED
+  DENIED_FROM_STORAGE: 6,   // Call failed because STARTING_DENIED
+  USER_GRANTED: 7,          // User granted the permission after seeing a prompt
+  USER_DENIED: 8,           // User denied the permission after seeing a prompt
+  USER_DISMISSED: 9,        // User closed the prompt without responding
+  BROWSER_BLOCKED: 10,      // Browser blocked; it didn't show permission dialog
                             // or check prior user preferences
-  SETTINGS_GRANTED: 9,      // User enabled the permission from within settings
-  SETTINGS_DENIED: 10,      // User disabled the permission from within settings
-  SETTINGS_DEFAULT: 11,     // User reset the permission to 'prompt' next time
-  FAST_NAVIGATE: 12,        // User navigated very quickly after prompt shown
-  SLOW_NAVIGATE: 13,        // User navigated without making a decision
+  SETTINGS_GRANTED: 11,      // User enabled the permission from within settings
+  SETTINGS_DENIED: 12,      // User disabled the permission from within settings
+  SETTINGS_DEFAULT: 13,     // User reset the permission to 'prompt' next time
+  FAST_NAVIGATE: 14,        // User navigated very quickly after prompt shown
+  SLOW_NAVIGATE: 15,        // User navigated without making a decision
 };
 
 // Used to differentiate between an automated and human response to a dialog, in
@@ -93,9 +95,9 @@ apiWatcher.checkInitialState = function () {
       var state = permissionStatus.state || permissionStatus.status;
       apiWatcher.initialState_ = state;
       if (state == 'granted')
-        statusLog.recordApiStatus(apiWatcher.Status.INITALLY_GRANTED);
+        statusLog.recordApiStatus(apiWatcher.Status.STARTING_GRANTED);
       else if (state == 'denied')
-        statusLog.recordApiStatus(apiWatcher.Status.INITIALLY_DENIED);
+        statusLog.recordApiStatus(apiWatcher.Status.STARTING_DENIED);
       else if (state == 'prompt')
         statusLog.recordApiStatus(apiWatcher.Status.NOT_YET_PROMPTED);
     });
@@ -111,6 +113,8 @@ apiWatcher.successCallback = function() {
 
   if (apiWatcher.initialState_ == 'prompt')
     statusLog.recordApiStatus(apiWatcher.Status.USER_GRANTED);
+  else
+    statusLog.recordApiStatus(apiWatcher.Status.GRANTED_FROM_STORAGE);
   apiWatcher.pending_ = false;
 }
 
@@ -125,9 +129,8 @@ apiWatcher.failureCallback = function() {
 
   apiWatcher.pending_ = false;
 
-  // The user didn't actually see a permission dialog, so don't record anything.
   if (apiWatcher.initialState_ != 'prompt')
-    return;
+    statusLog.recordApiStatus(apiWatcher.Status.DENIED_FROM_STORAGE, delta);
 
   var delta = Date.now() - apiWatcher.timestamp_;
   navigator.permissions.query({name:'geolocation'}).then(
@@ -150,14 +153,14 @@ apiWatcher.recordInvocation = function() {
   if (!apiWatcher.queryAvailable_)
     return;
 
+  statusLog.recordApiStatus(apiWatcher.Status.REQUESTED);
+  apiWatcher.pending_ = true;
+  apiWatcher.timestamp_ = Date.now();
+
   // If the permission was requested on load, this could be happening before
   // checkInitialState has had a chance to run, so force-invoke it here.
   if (apiWatcher.initialState_ == 'unknown')
     apiWatcher.checkInitialState();
-
-  statusLog.recordApiStatus(apiWatcher.Status.REQUESTED);
-  apiWatcher.pending_ = true;
-  apiWatcher.timestamp_ = Date.now();
 }
 
 /**
@@ -402,13 +405,17 @@ statusLog.recordApiStatus = function(newStatus, delta) {
   if (newStatus == apiWatcher.Status.UNAVAILABLE)
     humanString = 'unavailable';
   else if (newStatus == apiWatcher.Status.NOT_YET_PROMPTED)
-    humanString = 'not prompted';
+    humanString = 'default';
   else if (newStatus == apiWatcher.Status.REQUESTED)
     humanString = 'requested';
-  else if (newStatus == apiWatcher.Status.INITALLY_GRANTED)
+  else if (newStatus == apiWatcher.Status.STARTING_GRANTED)
     humanString = 'user previously granted';
-  else if (newStatus == apiWatcher.Status.INITIALLY_DENIED)
+  else if (newStatus == apiWatcher.Status.STARTING_DENIED)
     humanString = 'user previously denied';
+  else if (newStatus == apiWatcher.Status.GRANTED_FROM_STORAGE)
+    humanString = 'granted, due to saved decision';
+  else if (newStatus == apiWatcher.Status.DENIED_FROM_STORAGE)
+    humanString = 'denied, due to saved decision';
   else if (newStatus == apiWatcher.Status.USER_GRANTED)
     humanString = 'user granted';
   else if (newStatus == apiWatcher.Status.USER_DENIED)
