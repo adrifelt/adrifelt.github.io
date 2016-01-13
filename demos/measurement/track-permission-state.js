@@ -46,11 +46,13 @@ apiWatcher.Status = {
   SETTINGS_DEFAULT: 13,     // User reset the permission to 'prompt' next time
   FAST_NAVIGATE: 14,        // User navigated very quickly after prompt shown
   SLOW_NAVIGATE: 15,        // User navigated without making a decision
+  GRANTED_BUT_OS: 16        // Permission granted from storage, but the call is
+                            // failing due to missing OS-level permissions
 };
 
 // Used to differentiate between an automated and human response to a dialog, in
 // some situations where the Permissions API doesn't provide the information.
-apiWatcher.THRESHOLD = 5;  // Milliseconds
+apiWatcher.THRESHOLD = 100;  // Milliseconds
 apiWatcher.timestamp_ = 0;
 
 // Compatibility information.
@@ -165,8 +167,9 @@ apiWatcher.failureCallback = function(errorCode) {
   if (errorCode != 1)
     return;
 
-  if (apiWatcher.initialState_ != 'prompt')
+  if (apiWatcher.initialState_ == 'denied')
     statusLog.recordApiStatus(apiWatcher.Status.DENIED_FROM_STORAGE, delta);
+  
 
   var delta = Date.now() - apiWatcher.timestamp_;
   navigator.permissions.query({name:'geolocation'}).then(
@@ -255,7 +258,7 @@ callbackWatcher.Status = {
 };
 
 // Used to differentiate between an automated and human response to a dialog.
-callbackWatcher.THRESHOLD = 5;  // Milliseconds
+callbackWatcher.THRESHOLD = 100;  // Milliseconds
 callbackWatcher.timestamp_ = 0;
 
 // Used to identify situations where the user navigates the page without
@@ -477,6 +480,8 @@ statusLog.recordApiStatus = function(newStatus, delta) {
     humanString = 'navigated too quickly to respond';
   else if (newStatus == apiWatcher.Status.SLOW_NAVIGATE)
     humanString = 'navigated without responding';
+  else if (newStatus == apiWatcher.Status.GRANTED_BUT_OS)
+    humanString = 'missing OS permission';
 
   var deltaString = '';
   if (delta) deltaString = ' (' + delta + 'ms)';
