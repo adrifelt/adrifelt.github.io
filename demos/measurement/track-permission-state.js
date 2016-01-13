@@ -179,7 +179,7 @@ apiWatcher.checkBeforeNavigate = function() {
     statusLog.recordCallbackStatus(apiWatcher.Status.SLOW_NAVIGATE, delta);
   return null;
 }
-document.addEventListener('beforeunload', apiWatcher.checkBeforeNavigate);
+window.addEventListener('beforeunload', apiWatcher.checkBeforeNavigate);
 
 /**
  * Update the demo UI based on which API methods are available.
@@ -281,7 +281,7 @@ callbackWatcher.checkBeforeNavigate = function() {
     statusLog.recordCallbackStatus(callbackWathcer.Status.SLOW_NAVIGATE, delta);
   return null;
 }
-document.addEventListener('beforeunload', callbackWatcher.checkBeforeNavigate);
+window.addEventListener('beforeunload', callbackWatcher.checkBeforeNavigate);
 
 /**
  * We can't know the initial status until actually trying to invoke the
