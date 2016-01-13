@@ -23,6 +23,7 @@
 //   -- Initially (on page load, or otherwise prior to the geolocation call)
 //   -- In the error callback
 //   -- When the page navigates
+//   -- When the permission status changes
 // *****************************************************************************
 var apiWatcher = {};
 
@@ -84,7 +85,7 @@ document.addEventListener('DOMContentLoaded', apiWatcher.compatCheck);
  * On page load, check whether the user has previously granted or denied the
  * permission request during a prior interaction with the website.
  */
-apiWatcher.checkInitialState = function () {
+apiWatcher.checkInitialState = function() {
   if (!apiWatcher.queryAvailable_)
     return;
 
@@ -100,7 +101,15 @@ apiWatcher.checkInitialState = function () {
         statusLog.recordApiStatus(apiWatcher.Status.STARTING_DENIED);
       else if (state == 'prompt')
         statusLog.recordApiStatus(apiWatcher.Status.NOT_YET_PROMPTED);
+      permissionStatus.addEventListener('change', apiWatcher.recordPermissionChange);
     });
+}
+
+apiWatcher.recordPermissionChange = function() {
+  if (apiWatcher.pending_)
+    return;
+
+  console.log(this.state);
 }
 
 /**
