@@ -101,7 +101,9 @@ apiWatcher.checkInitialState = function() {
         statusLog.recordApiStatus(apiWatcher.Status.STARTING_DENIED);
       else if (state == 'prompt')
         statusLog.recordApiStatus(apiWatcher.Status.NOT_YET_PROMPTED);
-      permissionStatus.addEventListener('change', apiWatcher.recordPermissionChange);
+
+      permissionStatus.addEventListener(
+          'change', apiWatcher.recordPermissionChange);
     });
 }
 
@@ -112,10 +114,12 @@ apiWatcher.checkInitialState = function() {
  * was attached to in checkInitialState.
  */
 apiWatcher.recordPermissionChange = function() {
-  if (apiWatcher.pending_)
-    return;
-
   var state = this.state || this.status;
+  if (state == 'granted' && apiWatcher.pending_)
+    apiWatcher.recordSuccess();
+  else if (apiWatcher.pending_)
+    return;
+  
   if (state == 'granted')
     statusLog.recordApiStatus(apiWatcher.Status.SETTINGS_GRANTED);
   else if (state == 'denied')
@@ -125,10 +129,12 @@ apiWatcher.recordPermissionChange = function() {
 }
 
 /**
- * Invoked as part of the geolocation error callback. The meaning of the success
- * depends on what the initial state was.
+ * Invoked when the permission is granted. This is called when the
+ * PermissionStatus onchange event fires. We don't use the success callback if
+ * the Permission API is available because there might be a substantial delay
+ * before the success callback is fired (due to how long GPS takes to resolve).
  */
-apiWatcher.successCallback = function() {
+apiWatcher.recordSuccess = function() {
   if (!apiWatcher.queryAvailable_)
     return;
 
@@ -141,8 +147,9 @@ apiWatcher.successCallback = function() {
 
 /**
  * Invoked as part of the geolocation error callback. The meaning of the error
- * depends on what the initial state was, the timing of the response, and the
- * new permission state.
+ * depends on what the initial state was, the timing of the response, the
+ * new permission state, and the callback error code. We use the error callback
+ * instead of the PermissionStatus onchange event because we use the error code.
  */
 apiWatcher.failureCallback = function() {
   if (!apiWatcher.queryAvailable_)
@@ -328,7 +335,6 @@ requestDriver.STORAGE_CLICK = 'click';
  * A wrapper to invoke both the apiWatcher and callbackWatcher callbacks.
  */
 requestDriver.successCallback = function() {
-  apiWatcher.successCallback();
   callbackWatcher.successCallback();
 
   if (apiWatcher.revokeAvailable_)
