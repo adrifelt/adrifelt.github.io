@@ -159,6 +159,7 @@ apiWatcher.failureCallback = function(errorCode) {
     return;
 
   apiWatcher.pending_ = false;
+  alert(errorCode);
 
   // If the error code is a timeout, the permission status might have been
   // approved prior to failing, which would have been seen by recordSuccess.
