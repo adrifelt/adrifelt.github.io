@@ -500,7 +500,7 @@ statusLog.recordApiStatus = function(newStatus, delta) {
   var deltaString = '';
   if (delta) deltaString = ' (' + delta + 'ms)';
 
-  $('status-permissions').innerText = humanString;
+  $('status-permissions').textContent = humanString;
   console.log('Permission API: ' + humanString + deltaString);
 }
 
@@ -532,7 +532,7 @@ statusLog.recordCallbackStatus = function(newStatus, delta) {
   var deltaString = '';
   if (delta) deltaString = ' (' + delta + 'ms)';
 
-  $('status-callbacks').innerText = humanString;
+  $('status-callbacks').textContent = humanString;
   console.log('Callback tracking: ' + humanString + deltaString);
 }
 
@@ -544,16 +544,16 @@ statusLog.recordCallbackStatus = function(newStatus, delta) {
  */
 statusLog.displayFeatureStatus = function(elem, supported) {
   if (supported) {
-    elem.innerText = 'supported';
+    elem.textContent = 'supported';
     elem.classList.add('feature-supported');
   } else {
-    elem.innerText = 'unsupported';
+    elem.textContent = 'unsupported';
     elem.classList.add('feature-unsupported');
   }
 }
 
 statusLog.setPermissionStatus = function(message) {
-  $('status-permissions').innerText = message;
+  $('status-permissions').textContent = message;
 }
 
 // *****************************************************************************
