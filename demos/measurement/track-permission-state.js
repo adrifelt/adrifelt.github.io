@@ -234,7 +234,7 @@ window.addEventListener('beforeunload', apiWatcher.checkBeforeNavigate);
  */
 apiWatcher.updateUICompatibility = function() {
   if (!apiWatcher.queryAvailable_)
-    statusLog.setPermissionStatus(apiWatcher.Status.UNAVAILABLE);
+    statusLog.recordApiStatus(apiWatcher.Status.UNAVAILABLE);
 
   statusLog.displayFeatureStatus(
       $('support-query'), apiWatcher.queryAvailable_);
