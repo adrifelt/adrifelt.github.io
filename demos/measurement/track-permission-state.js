@@ -167,9 +167,14 @@ apiWatcher.failureCallback = function(errorCode) {
   if (errorCode != 1)
     return;
 
-  if (apiWatcher.initialState_ == 'denied')
+  if (apiWatcher.initialState_ == 'denied') {
     statusLog.recordApiStatus(apiWatcher.Status.DENIED_FROM_STORAGE, delta);
-  
+    return;
+  }
+
+  if (apiWatcher.initialState_ == 'granted')
+    statusLog.recordApiStatus(apiWatcher.Status.GRANTED_BUT_OS);
+  }
 
   var delta = Date.now() - apiWatcher.timestamp_;
   navigator.permissions.query({name:'geolocation'}).then(
