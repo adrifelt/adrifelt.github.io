@@ -118,7 +118,9 @@ apiWatcher.checkInitialState = function() {
 apiWatcher.recordPermissionChange = function() {
   var state = this.state || this.status;
   if (state == 'granted' && apiWatcher.pending_) {
-    apiWatcher.recordSuccess();
+    // The success callback might take a long time to actually fire, due to
+    // how long GPS takes to resolve. Preempt it here.
+    apiWatcher.successCallback();
     return;
   } else if (apiWatcher.pending_) {
     return;
@@ -133,13 +135,10 @@ apiWatcher.recordPermissionChange = function() {
 }
 
 /**
- * Invoked when the permission is granted. This is called when the
- * PermissionStatus onchange event fires. We don't use the success callback if
- * the Permission API is available because there might be a substantial delay
- * before the success callback is fired (due to how long GPS takes to resolve).
+ * Invoked when the permission is granted.
  */
-apiWatcher.recordSuccess = function() {
-  if (!apiWatcher.queryAvailable_)
+apiWatcher.successCallback = function() {
+  if (!apiWatcher.queryAvailable_ || !apiWatcher.pending_)
     return;
 
   if (apiWatcher.initialState_ == 'prompt')
@@ -359,6 +358,7 @@ requestDriver.STORAGE_CLICK = 'click';
  */
 requestDriver.successCallback = function() {
   callbackWatcher.successCallback();
+  apiWatcher.successCallback();
 
   if (apiWatcher.revokeAvailable_)
     requestDriver.setupRevocationButton();
