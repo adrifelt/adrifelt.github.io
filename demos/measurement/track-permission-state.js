@@ -52,7 +52,7 @@ apiWatcher.Status = {
 
 // Used to differentiate between an automated and human response to a dialog, in
 // some situations where the Permissions API doesn't provide the information.
-apiWatcher.THRESHOLD = 100;  // Milliseconds
+apiWatcher.THRESHOLD = 10;  // Milliseconds
 apiWatcher.timestamp_ = 0;
 
 // Compatibility information.
@@ -160,8 +160,6 @@ apiWatcher.failureCallback = function(errorCode) {
 
   apiWatcher.pending_ = false;
 
-  alert("api watcher: " + errorCode);
-
   // If the error code is a timeout, the permission status might have been
   // approved prior to failing, which would have been seen by recordSuccess.
   if (errorCode != 1)
@@ -264,7 +262,7 @@ callbackWatcher.Status = {
 };
 
 // Used to differentiate between an automated and human response to a dialog.
-callbackWatcher.THRESHOLD = 100;  // Milliseconds
+callbackWatcher.THRESHOLD = 10;  // Milliseconds
 callbackWatcher.timestamp_ = 0;
 
 // Used to identify situations where the user navigates the page without
@@ -294,7 +292,6 @@ callbackWatcher.successCallback = function() {
 callbackWatcher.failureCallback = function(errorCode) {
   callbackWatcher.timestamp_ = 0;
   callbackWatcher.pending_ = false;
-  alert("callbackWatcher: " + errorCode);
 
   if (errorCode != 1) {
     statusLog.recordCallbackStatus(callbackWatcher.Status.UNKNOWN, delta);
@@ -487,7 +484,7 @@ statusLog.recordApiStatus = function(newStatus, delta) {
   else if (newStatus == apiWatcher.Status.SLOW_NAVIGATE)
     humanString = 'navigated without responding';
   else if (newStatus == apiWatcher.Status.GRANTED_BUT_OS)
-    humanString = 'missing OS permission';
+    humanString = 'location disabled by OS';
 
   var deltaString = '';
   if (delta) deltaString = ' (' + delta + 'ms)';
