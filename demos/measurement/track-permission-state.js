@@ -162,6 +162,7 @@ apiWatcher.recordInvocation = function() {
 
 /**
  * Record when the user navigates without making a permission decision.
+ * @return {null} To make the method execute in Chrome.
  */
 apiWatcher.checkBeforeNavigate = function() {
   if (!apiWatcher.pending_ || !apiWatcher.queryAvailable_)
@@ -172,12 +173,9 @@ apiWatcher.checkBeforeNavigate = function() {
     statusLog.recordCallbackStatus(apiWatcher.Status.FAST_NAVIGATE, delta);
   else
     statusLog.recordCallbackStatus(apiWatcher.Status.SLOW_NAVIGATE, delta);
+  return null;
 }
 document.addEventListener('beforeunload', apiWatcher.checkBeforeNavigate);
-
-document.addEventListener('beforeunload', function() { console.log("1"); });
-window.addEventListener('beforeunload', function() { console.log("2"); });
-
 
 /**
  * Update the demo UI based on which API methods are available.
@@ -266,6 +264,7 @@ callbackWatcher.recordInvocation = function() {
 
 /**
  * Record when the user navigates without making a permission decision.
+ * @return {null} To make the method execute in Chrome.
  */
 callbackWatcher.checkBeforeNavigate = function() {
   if (!callbackWatcher.pending_)
@@ -276,6 +275,7 @@ callbackWatcher.checkBeforeNavigate = function() {
     statusLog.recordCallbackStatus(callbackWatcher.Status.FAST_NAVIGATE, delta);
   else
     statusLog.recordCallbackStatus(callbackWathcer.Status.SLOW_NAVIGATE, delta);
+  return null;
 }
 document.addEventListener('beforeunload', callbackWatcher.checkBeforeNavigate);
 
