@@ -16,6 +16,7 @@
 // passing the callback results on to the apiWatcher and callbackWatcher.
 // *****************************************************************************
 
+
 // *****************************************************************************
 // PERMISSIONS API WATCHER
 // These methods track the permission state using the Permissions API.
