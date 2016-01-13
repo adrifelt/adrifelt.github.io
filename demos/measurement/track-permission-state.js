@@ -140,9 +140,10 @@ apiWatcher.recordSuccess = function() {
   if (!apiWatcher.queryAvailable_)
     return;
 
+  alert(apiWatcher.initialState_);
   if (apiWatcher.initialState_ == 'prompt')
     statusLog.recordApiStatus(apiWatcher.Status.USER_GRANTED);
-  else
+  else if (apiWatcher.initialState_ == 'granted')
     statusLog.recordApiStatus(apiWatcher.Status.GRANTED_FROM_STORAGE);
   apiWatcher.pending_ = false;
 }
@@ -159,7 +160,6 @@ apiWatcher.failureCallback = function(errorCode) {
     return;
 
   apiWatcher.pending_ = false;
-  alert(errorCode);
 
   // If the error code is a timeout, the permission status might have been
   // approved prior to failing, which would have been seen by recordSuccess.
