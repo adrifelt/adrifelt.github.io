@@ -277,7 +277,7 @@ callbackWatcher.checkBeforeNavigate = function() {
   if (delta < callbackWatcher.THRESHOLD)
     statusLog.recordCallbackStatus(callbackWatcher.Status.FAST_NAVIGATE, delta);
   else
-    statusLog.recordCallbackStatus(callbackWathcer.Status.SLOW_NAVIGATE, delta);
+    statusLog.recordCallbackStatus(callbackWatcher.Status.SLOW_NAVIGATE, delta);
   return null;
 }
 window.addEventListener('beforeunload', callbackWatcher.checkBeforeNavigate);
