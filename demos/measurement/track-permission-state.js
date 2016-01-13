@@ -117,13 +117,11 @@ apiWatcher.checkInitialState = function() {
  */
 apiWatcher.recordPermissionChange = function() {
   var state = this.state || this.status;
-  console.log(apiWatcher.pending_);
-  console.log(state);
   if (state == 'granted' && apiWatcher.pending_)
     apiWatcher.recordSuccess();
-  else if (apiWatcher.pending_)
-    return;
-  
+
+  if (apiWatcher.pending_)
+    return;  
   if (state == 'granted')
     statusLog.recordApiStatus(apiWatcher.Status.SETTINGS_GRANTED);
   else if (state == 'denied')
