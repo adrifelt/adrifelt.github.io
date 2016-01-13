@@ -364,9 +364,6 @@ requestDriver.STORAGE_CLICK = 'click';
 requestDriver.successCallback = function() {
   callbackWatcher.successCallback();
   apiWatcher.successCallback();
-
-  if (apiWatcher.revokeAvailable_)
-    requestDriver.setupRevocationButton();
 }
 
 /**
@@ -427,19 +424,6 @@ requestDriver.setup = function() {
   }
 }
 document.addEventListener('DOMContentLoaded', requestDriver.setup);
-
-/**
- * The revocation button allows you to reset the geolocation permission status,
- * which users can do from within settings or by clicking on the green lock.
- * The API is only available on very new browsers.
- */
-requestDriver.setupRevocationButton = function() {
-  $('revoke-button').removeAttribute('disabled');
-  $('revoke-button').addEventListener('click', function() {
-    navigator.permissions.revoke({name:'geolocation'});
-    $('revoke-button').setAttribute('disabled', true);
-  });
-}
 
 // *****************************************************************************
 // STATUS LOGGER
@@ -549,6 +533,26 @@ statusLog.displayFeatureStatus = function(elem, supported) {
 statusLog.setPermissionStatus = function(message) {
   $('status-permissions').innerText = message;
 }
+
+// *****************************************************************************
+// REVOCATION
+// This adds a "Revoke" button on systems where it's available, as a
+// convenience for testing. It resets the permission state to the default.
+// *****************************************************************************
+
+var revoke = {};
+
+revoke.maybeEnableButton = function() {
+  if (!navigator.permissions || !navigator.permissions.revoke)
+    return;
+  $('revoke-button').removeAttribute('disabled');
+  $('revoke-button').addEventListener('click', function() {
+    navigator.permissions.revoke({name:'geolocation'});
+  });
+}
+document.addEventListener('DOMContentLoaded', revoke.maybeEnableButton);
+
+
 
 function $(elementName) {
   return document.getElementById(elementName);
