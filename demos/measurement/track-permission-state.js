@@ -157,7 +157,14 @@ apiWatcher.failureCallback = function(errorCode) {
     return;
 
   apiWatcher.pending_ = false;
-  console.log("api watcher " + errorCode);
+
+  alert("api watcher: " + errorCode);
+
+  // If the error code is a timeout, the permission status might have been
+  // approved prior to failing, which would have been seen by recordSuccess.
+  if (errorCode != 1)
+    return;
+
   if (apiWatcher.initialState_ != 'prompt')
     statusLog.recordApiStatus(apiWatcher.Status.DENIED_FROM_STORAGE, delta);
 
@@ -276,16 +283,20 @@ callbackWatcher.successCallback = function() {
  * @param {number} errorCode The error code from the callback.
  */
 callbackWatcher.failureCallback = function(errorCode) {
+  callbackWatcher.timestamp_ = 0;
+  callbackWatcher.pending_ = false;
+  alert("callbackWatcher: " + errorCode);
+
+  if (errorCode != 1) {
+    statusLog.recordCallbackStatus(callbackWatcher.Status.UNKNOWN, delta);
+    return;
+  }
+
   var delta = Date.now() - callbackWatcher.timestamp_;
   if (delta > callbackWatcher.THRESHOLD)
     statusLog.recordCallbackStatus(callbackWatcher.Status.USER_DENIED, delta);
   else
     statusLog.recordCallbackStatus(callbackWatcher.Status.AUTO_DENIED, delta);
-
-  console.log(errorCode);
-
-  callbackWatcher.timestamp_ = 0;
-  callbackWatcher.pending_ = false;
 }
 
 /**
