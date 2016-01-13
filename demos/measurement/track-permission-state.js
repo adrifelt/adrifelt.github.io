@@ -105,11 +105,23 @@ apiWatcher.checkInitialState = function() {
     });
 }
 
+/**
+ * Record a change to a permission that wasn't associated with a permission
+ * request. (It must have come from the user messing with the settings.)
+ * Note that this runs within the scope of the permissionStatus object that it
+ * was attached to in checkInitialState.
+ */
 apiWatcher.recordPermissionChange = function() {
   if (apiWatcher.pending_)
     return;
 
-  console.log(this.state);
+  var state = this.state || this.status;
+  if (state == 'granted')
+    statusLog.recordApiStatus(apiWatcher.Status.SETTINGS_GRANTED);
+  else if (state == 'denied')
+    statusLog.recordApiStatus(apiWatcher.Status.SETTINGS_DENIED);
+  else if (state == 'prompt')
+    statusLog.recordApiStatus(apiWatcher.Status.SETTINGS_DEFAULT);
 }
 
 /**
