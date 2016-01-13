@@ -40,7 +40,7 @@ apiWatcher.Status = {
   USER_DISMISSED: 9,        // User closed the prompt without responding
   BROWSER_BLOCKED: 10,      // Browser blocked; it didn't show permission dialog
                             // or check prior user preferences
-  SETTINGS_GRANTED: 11,      // User enabled the permission from within settings
+  SETTINGS_GRANTED: 11,     // User enabled the permission from within settings
   SETTINGS_DENIED: 12,      // User disabled the permission from within settings
   SETTINGS_DEFAULT: 13,     // User reset the permission to 'prompt' next time
   FAST_NAVIGATE: 14,        // User navigated very quickly after prompt shown
@@ -168,9 +168,10 @@ apiWatcher.recordInvocation = function() {
  * @return {null} To make the method execute in Chrome.
  */
 apiWatcher.checkBeforeNavigate = function() {
+  console.log(3+4);
   if (!apiWatcher.pending_ || !apiWatcher.queryAvailable_)
     return;
-
+  console.log(1+2);
   var delta = Date.now() - apiWatcher.timestamp_;
   if (delta > apiWatcher.THRESHOLD)
     statusLog.recordCallbackStatus(apiWatcher.Status.FAST_NAVIGATE, delta);
