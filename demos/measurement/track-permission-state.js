@@ -150,13 +150,14 @@ apiWatcher.recordSuccess = function() {
  * depends on what the initial state was, the timing of the response, the
  * new permission state, and the callback error code. We use the error callback
  * instead of the PermissionStatus onchange event because we use the error code.
+ * @param {number} errorCode The error code from the callback.
  */
-apiWatcher.failureCallback = function() {
+apiWatcher.failureCallback = function(errorCode) {
   if (!apiWatcher.queryAvailable_)
     return;
 
   apiWatcher.pending_ = false;
-
+  console.log("api watcher " + errorCode);
   if (apiWatcher.initialState_ != 'prompt')
     statusLog.recordApiStatus(apiWatcher.Status.DENIED_FROM_STORAGE, delta);
 
@@ -272,13 +273,16 @@ callbackWatcher.successCallback = function() {
 /**
  * Invoked as part of the geolocation error callback. Record the failure, and
  * compare it to the user-response timing threshold.
+ * @param {number} errorCode The error code from the callback.
  */
-callbackWatcher.failureCallback = function() {
+callbackWatcher.failureCallback = function(errorCode) {
   var delta = Date.now() - callbackWatcher.timestamp_;
   if (delta > callbackWatcher.THRESHOLD)
     statusLog.recordCallbackStatus(callbackWatcher.Status.USER_DENIED, delta);
   else
     statusLog.recordCallbackStatus(callbackWatcher.Status.AUTO_DENIED, delta);
+
+  console.log(errorCode);
 
   callbackWatcher.timestamp_ = 0;
   callbackWatcher.pending_ = false;
@@ -343,10 +347,11 @@ requestDriver.successCallback = function() {
 
 /**
  * A wrapper to invoke both the apiWatcher and callbackWatcher callbacks.
+ * @param {Object} positionError Geolocation API PositionError.
  */
-requestDriver.failureCallback = function() {
-  apiWatcher.failureCallback();
-  callbackWatcher.failureCallback();
+requestDriver.failureCallback = function(positionError) {
+  apiWatcher.failureCallback(positionError.code);
+  callbackWatcher.failureCallback(positionError.code);
 }
 
 /**
