@@ -64,6 +64,7 @@ apiWatcher.revokeAvailable_ = false;
 apiWatcher.pending_ = false;
 apiWatcher.initialState_ = 'unknown';
 
+
 /**
  * Check whether the permissions API is available, which must be done before
  * anything else.
@@ -82,6 +83,7 @@ apiWatcher.compatCheck = function() {
   apiWatcher.updateUICompatibility();
 }
 document.addEventListener('DOMContentLoaded', apiWatcher.compatCheck);
+
 
 /**
  * On page load, check whether the user has previously granted or denied the
@@ -109,6 +111,7 @@ apiWatcher.checkInitialState = function() {
     });
 }
 
+
 /**
  * Record a change to a permission that wasn't associated with a permission
  * request. (It must have come from the user messing with the settings.)
@@ -135,6 +138,7 @@ apiWatcher.recordPermissionChange = function() {
   apiWatcher.initialState_ = state;
 }
 
+
 /**
  * Invoked when the permission is granted.
  */
@@ -150,6 +154,7 @@ apiWatcher.successCallback = function() {
   apiWatcher.pending_ = false;
   apiWatcher.initialState_ = 'granted';
 }
+
 
 /**
  * Invoked as part of the geolocation error callback. The meaning of the error
@@ -195,6 +200,7 @@ apiWatcher.failureCallback = function(errorCode) {
     });
 }
 
+
 /**
  * Invoked before requestDriver tries to invoke the geolocation function.
  */
@@ -212,6 +218,7 @@ apiWatcher.recordInvocation = function() {
     apiWatcher.checkInitialState();
 }
 
+
 /**
  * Record when the user navigates without making a permission decision.
  * @return {null} To make the method execute in Chrome.
@@ -228,6 +235,7 @@ apiWatcher.checkBeforeNavigate = function() {
   return null;
 }
 window.addEventListener('beforeunload', apiWatcher.checkBeforeNavigate);
+
 
 /**
  * Update the demo UI based on which API methods are available.
@@ -275,6 +283,7 @@ callbackWatcher.timestamp_ = 0;
 // responding to the dialog.
 callbackWatcher.pending_ = false;
 
+
 /**
  * Invoked as part of the geolocation success callback. Record the success, and
  * compare it to the user-response timing threshold.
@@ -289,6 +298,7 @@ callbackWatcher.successCallback = function() {
   callbackWatcher.timestamp_ = 0;
   callbackWatcher.pending_ = false;
 }
+
 
 /**
  * Invoked as part of the geolocation error callback. Record the failure, and
@@ -311,6 +321,7 @@ callbackWatcher.failureCallback = function(errorCode) {
     statusLog.recordCallbackStatus(callbackWatcher.Status.AUTO_DENIED, delta);
 }
 
+
 /**
  * Invoked before the requestDriver tries to invoke the geolocation function.
  */
@@ -319,6 +330,7 @@ callbackWatcher.recordInvocation = function() {
   callbackWatcher.timestamp_ = Date.now();
   callbackWatcher.pending_ = true;
 }
+
 
 /**
  * Record when the user navigates without making a permission decision.
@@ -336,6 +348,7 @@ callbackWatcher.checkBeforeNavigate = function() {
   return null;
 }
 window.addEventListener('beforeunload', callbackWatcher.checkBeforeNavigate);
+
 
 /**
  * We can't know the initial status until actually trying to invoke the
@@ -358,6 +371,7 @@ requestDriver.STORAGE_KEY = 'request';
 requestDriver.STORAGE_LOAD = 'onload';
 requestDriver.STORAGE_CLICK = 'click';
 
+
 /**
  * A wrapper to invoke both the apiWatcher and callbackWatcher callbacks.
  */
@@ -365,6 +379,7 @@ requestDriver.successCallback = function() {
   callbackWatcher.successCallback();
   apiWatcher.successCallback();
 }
+
 
 /**
  * A wrapper to invoke both the apiWatcher and callbackWatcher callbacks.
@@ -375,6 +390,7 @@ requestDriver.failureCallback = function(positionError) {
   callbackWatcher.failureCallback(positionError.code);
 }
 
+
 /**
  * Tell the callbackWatcher and apiWatcher that we're about to invoke the
  * geolocation API.
@@ -384,6 +400,7 @@ requestDriver.notifyInvocation = function() {
   callbackWatcher.recordInvocation();
 }
 
+
 /**
  * Try to read geolocation. This will trigger a permission check.
  */
@@ -392,6 +409,7 @@ requestDriver.initiateRequest = function() {
   navigator.geolocation.getCurrentPosition(
       requestDriver.successCallback, requestDriver.failureCallback);
 }
+
 
 /**
  * Make the "request" and "request onload" buttons work. Use local storage
@@ -434,6 +452,7 @@ document.addEventListener('DOMContentLoaded', requestDriver.setup);
 // *****************************************************************************
 
 var statusLog = {};
+
 
 /**
  * Display the apiWatcher's status on the UI and in the console.
@@ -484,6 +503,7 @@ statusLog.recordApiStatus = function(newStatus, delta) {
   console.log('Permission API: ' + humanString + deltaString);
 }
 
+
 /**
  * Display the callbackWatcher's status on the UI and in the console.
  * @param {callbackWatcher.Status} newStatus The desired status.
@@ -515,6 +535,7 @@ statusLog.recordCallbackStatus = function(newStatus, delta) {
   console.log('Callback tracking: ' + humanString + deltaString);
 }
 
+
 /**
  * Update the feature status pane.
  * @param {!Object} elem The feature status's DOM element.
@@ -542,16 +563,47 @@ statusLog.setPermissionStatus = function(message) {
 
 var revoke = {};
 
+/**
+ * Enable the revocation button if possible, when the permission is granted.
+ */
 revoke.maybeEnableButton = function() {
-  if (!navigator.permissions || !navigator.permissions.revoke)
+  if (!navigator.permissions || !navigator.permissions.query ||
+      !navigator.permissions.revoke)
     return;
-  $('revoke-button').removeAttribute('disabled');
-  $('revoke-button').addEventListener('click', function() {
-    navigator.permissions.revoke({name:'geolocation'});
-  });
+
+  navigator.permissions.query({name:'geolocation'}).then(
+    function(permissionStatus) {
+      revoke.updateButtonState(
+          permissionStatus.state || permissionStatus.status);
+      permissionStatus.addEventListener('change', function() {
+        revoke.updateButtonState(this.state || this.status);
+      });
+    });
 }
 document.addEventListener('DOMContentLoaded', revoke.maybeEnableButton);
 
+
+/**
+ * Do the actual revocation on button click.
+ */
+revoke.handleClick = function() {
+  navigator.permissions.revoke({name:'geolocation'});
+}
+
+
+/**
+ * Enable or disable the UI according to the permission state.
+ * @param {Object} permissionState The state of the permission.
+ */
+revoke.updateButtonState = function(permissionState) {
+  if (permissionState == 'granted') {
+    $('revoke-button').removeAttribute('disabled');
+    $('revoke-button').addEventListener('click', revoke.handleClick);
+  } else {
+    $('revoke-button').setAttribute('disabled', true);
+    $('revoke-button').removeEventListener('click', revoke.handleClick);
+  }
+}
 
 
 function $(elementName) {
