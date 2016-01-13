@@ -27,8 +27,10 @@ apiWatcher.Status = {
   INITIALLY_DENIED: 4,      // Permission was previously set to 'denied'
   USER_GRANTED: 5,          // User granted the permission after seeing a prompt
   USER_DENIED: 6,           // User denied the permission after seeing a prompt
-  BROWSER_BLOCKED: 7,       // Browser blocked; it didn't show permission dialog
+  USER_DISMISSED: 7,        // User closed the prompt without responding
+  BROWSER_BLOCKED: 8,       // Browser blocked; it didn't show permission dialog
                             // or use prior user preferences.
+  
 };
 
 // Used to differentiate between an automated and human response to a dialog, in
@@ -66,7 +68,7 @@ document.addEventListener('DOMContentLoaded', apiWatcher.compatCheck);
 
 /**
  * On page load, check whether the user has previously granted or denied the
- * permission request.
+ * permission request during a prior interaction with the website.
  */
 apiWatcher.checkInitialState = function () {
   if (!apiWatcher.queryAvailable_)
@@ -102,19 +104,33 @@ apiWatcher.successCallback = function() {
 
 /**
  * Invoked as part of the geolocation error callback. The meaning of the error
- * depends on what the initial state was, and the timing of the response.
+ * depends on what the initial state was, the timing of the response, and the
+ * new permission state.
  */
 apiWatcher.failureCallback = function() {
   if (!apiWatcher.queryAvailable_)
     return;
 
-  var delta = Date.now() - apiWatcher.timestamp_;
-  if (apiWatcher.initialState_ == 'prompt' && delta > apiWatcher.THRESHOLD)
-    statusLog.recordApiStatus(apiWatcher.Status.USER_DENIED, delta);
-  else if (apiWatcher.initialState_ == 'prompt')
-    statusLog.recordApiStatus(apiWatcher.Status.BROWSER_BLOCKED, delta);
-
   apiWatcher.pending_ = false;
+
+  // The user didn't actually see a permission dialog.
+  if (apiWatcher.initialState_ != 'prompt')
+    return;
+
+  var delta = Date.now() - apiWatcher.timestamp_;
+  navigator.permissions.query({name:'geolocation'}).then(
+    function(permissionStatus) {
+      var state = permissionStatus.state || permissionStatus.status;
+
+      if (state == 'prompt' && delta > apiWatcher.THRESHOLD)
+        statusLog.recordApiStatus(apiWatcher.Status.USER_DISMISSED, delta);
+      else if (state == 'prompt' && delta <= apiWatcher.THRESHOLD)
+        statusLog.recordApiStatus(apiWatcher.Status.BROWSER_BLOCKED, delta);
+      else if (state == 'denied')
+        statusLog.recordApiStatus(apiWatcher.Status.USER_DENIED, delta);
+
+      console.log(state + " " + delta);
+    });
 }
 
 /**
@@ -129,6 +145,7 @@ apiWatcher.recordInvocation = function() {
   if (apiWatcher.initialState_ == 'unknown')
     apiWatcher.checkInitialState();
 
+  statusLog.recordApiStatus(apiWatcher.Status.REQUESTED);
   apiWatcher.pending_ = true;
   apiWatcher.timestamp_ = Date.now();
 }
