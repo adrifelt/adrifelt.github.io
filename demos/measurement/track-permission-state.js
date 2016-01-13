@@ -117,6 +117,8 @@ apiWatcher.checkInitialState = function() {
  */
 apiWatcher.recordPermissionChange = function() {
   var state = this.state || this.status;
+  console.log(apiWatcher.pending_);
+  console.log(state);
   if (state == 'granted' && apiWatcher.pending_)
     apiWatcher.recordSuccess();
   else if (apiWatcher.pending_)
@@ -140,7 +142,6 @@ apiWatcher.recordSuccess = function() {
   if (!apiWatcher.queryAvailable_)
     return;
 
-  alert(apiWatcher.initialState_);
   if (apiWatcher.initialState_ == 'prompt')
     statusLog.recordApiStatus(apiWatcher.Status.USER_GRANTED);
   else if (apiWatcher.initialState_ == 'granted')
