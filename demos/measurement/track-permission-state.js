@@ -175,6 +175,9 @@ apiWatcher.checkBeforeNavigate = function() {
 }
 document.addEventListener('beforeunload', apiWatcher.checkBeforeNavigate);
 
+document.addEventListener('beforeunload', function() { console.log('1'); });
+window.addEventListener('beforeunload', function() { console.log('1'); });
+
 
 /**
  * Update the demo UI based on which API methods are available.
@@ -410,6 +413,8 @@ statusLog.recordApiStatus = function(newStatus, delta) {
     humanString = 'user granted';
   else if (newStatus == apiWatcher.Status.USER_DENIED)
     humanString = 'user denied';
+  else if (newStatus == apiWatcher.Status.USER_DISMISSED)
+    humanString = 'user dismissed';
   else if (newStatus == apiWatcher.Status.BROWSER_BLOCKED)
     humanString = 'browser blocked';
   else if (newStatus == apiWatcher.Status.SETTINGS_GRANTED)
@@ -445,8 +450,6 @@ statusLog.recordCallbackStatus = function(newStatus, delta) {
     humanString = 'user granted';
   else if (newStatus == callbackWatcher.Status.USER_DENIED)
     humanString = 'user denied';
-  else if (newStatus == callbackWatcher.Status.USER_DISMISSED)
-    humanString = 'user dismissed';
   else if (newStatus == callbackWatcher.Status.AUTO_GRANTED)
     humanString = 'auto granted';
   else if (newStatus == callbackWatcher.Status.AUTO_DENIED)
