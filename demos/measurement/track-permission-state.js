@@ -172,8 +172,9 @@ apiWatcher.failureCallback = function(errorCode) {
     return;
   }
 
-  if (apiWatcher.initialState_ == 'granted')
+  if (apiWatcher.initialState_ == 'granted') {
     statusLog.recordApiStatus(apiWatcher.Status.GRANTED_BUT_OS);
+    return;
   }
 
   var delta = Date.now() - apiWatcher.timestamp_;
