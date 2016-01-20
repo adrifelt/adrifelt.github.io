@@ -18,12 +18,36 @@
 
 
 // *****************************************************************************
+// CONSTANTS
+// Constants used by both the callbackWatcher and apiWatcher.
+// *****************************************************************************
+
+var geoConstants = {};
+
+// Constants for the PermissionStatus API.
+geoConstants.DENIED = 'denied';
+geoConstants.GRANTED = 'granted';
+geoConstants.PROMPT = 'prompt';
+geoConstants.UNKNOWN = 'unknown';  // Used here but not part of the API spec.
+
+// The timing threshold used to differentiate between an automated and human
+// response to a dialog.
+geoConstants.THRESHOLD = 10;  // Milliseconds
+
+// Constants for the PositionError interface.
+geoConstants.ErrorCode = {
+  PERMISSION_DENIED: 1,
+  POSITION_UNAVAILABLE: 2,
+  TIMEOUT: 3,
+};
+
+// *****************************************************************************
 // PERMISSIONS API WATCHER
 // These methods track the permission state using the Permissions API.
 // To track the user's flow, check the permission status several times:
-//   -- Initially (on page load, or otherwise prior to the geolocation call)
+//   -- Initially (some time prior to the geolocation call)
 //   -- In the error callback
-//   -- When the page navigates
+//   -- When the page navigates away (on unload)
 //   -- When the permission status changes
 // *****************************************************************************
 var apiWatcher = {};
@@ -42,18 +66,16 @@ apiWatcher.Status = {
   USER_DISMISSED: 9,        // User closed the prompt without responding
   BROWSER_BLOCKED: 10,      // Browser blocked; it didn't show permission dialog
                             // or check prior user preferences
-  SETTINGS_GRANTED: 11,     // User enabled the permission from within settings
-  SETTINGS_DENIED: 12,      // User disabled the permission from within settings
-  SETTINGS_DEFAULT: 13,     // User reset the permission to 'prompt' next time
+  GRANTED_ELSEWHERE: 11,    // User enabled the permission somewhere else
+  DENIED_ELSEWHERE: 12,     // User disabled the permission somewhere else
+  RESET_ELSEWHERE: 13,      // User reset the permission to 'prompt' next time
   FAST_NAVIGATE: 14,        // User navigated very quickly after prompt shown
   SLOW_NAVIGATE: 15,        // User navigated without making a decision
   GRANTED_BUT_OS: 16        // Permission granted from storage, but the call is
                             // failing due to missing OS-level permissions
 };
 
-// Used to differentiate between an automated and human response to a dialog, in
-// some situations where the Permissions API doesn't provide the information.
-apiWatcher.THRESHOLD = 10;  // Milliseconds
+// Used to differentiate between an automated and human response to a dialog.
 apiWatcher.timestamp_ = 0;
 
 // Compatibility information.
@@ -63,7 +85,7 @@ apiWatcher.revokeAvailable_ = false;
 
 // Information needed to calculate the current state.
 apiWatcher.pending_ = false;
-apiWatcher.initialState_ = 'unknown';
+apiWatcher.initialState_ = geoConstants.UNKNOWN;
 
 
 /**
@@ -96,15 +118,15 @@ apiWatcher.checkInitialState = function() {
 
   navigator.permissions.query({name:'geolocation'}).then(
     function(permissionStatus) {
-      if (apiWatcher.initialState_ != 'unknown')
+      if (apiWatcher.initialState_ != geoConstants.UNKNOWN)
         return;
       var state = permissionStatus.state || permissionStatus.status;
       apiWatcher.initialState_ = state;
-      if (state == 'granted')
+      if (state == geoConstants.GRANTED)
         statusLog.recordApiStatus(apiWatcher.Status.STARTING_GRANTED);
-      else if (state == 'denied')
+      else if (state == geoConstants.DENIED)
         statusLog.recordApiStatus(apiWatcher.Status.STARTING_DENIED);
-      else if (state == 'prompt')
+      else if (state == geoConstants.PROMPT)
         statusLog.recordApiStatus(apiWatcher.Status.NOT_YET_PROMPTED);
 
       permissionStatus.addEventListener(
@@ -121,7 +143,7 @@ apiWatcher.checkInitialState = function() {
  */
 apiWatcher.recordPermissionChange = function() {
   var state = this.state || this.status;
-  if (state == 'granted' && apiWatcher.pending_) {
+  if (state == geoConstants.GRANTED && apiWatcher.pending_) {
     // The success callback might take a long time to actually fire, due to
     // how long GPS takes to resolve. Preempt it here.
     apiWatcher.successCallback();
@@ -130,12 +152,12 @@ apiWatcher.recordPermissionChange = function() {
     return;
   }
 
-  if (state == 'granted')
-    statusLog.recordApiStatus(apiWatcher.Status.SETTINGS_GRANTED);
-  else if (state == 'denied')
-    statusLog.recordApiStatus(apiWatcher.Status.SETTINGS_DENIED);
-  else if (state == 'prompt')
-    statusLog.recordApiStatus(apiWatcher.Status.SETTINGS_DEFAULT);
+  if (state == geoConstants.GRANTED)
+    statusLog.recordApiStatus(apiWatcher.Status.GRANTED_ELSEWHERE);
+  else if (state == geoConstants.DENIED)
+    statusLog.recordApiStatus(apiWatcher.Status.DENIED_ELSEWHERE);
+  else if (state == geoConstants.PROMPT)
+    statusLog.recordApiStatus(apiWatcher.Status.RESET_ELSEWHERE);
   apiWatcher.initialState_ = state;
 }
 
@@ -147,13 +169,13 @@ apiWatcher.successCallback = function() {
   if (!apiWatcher.queryAvailable_ || !apiWatcher.pending_)
     return;
 
-  if (apiWatcher.initialState_ == 'prompt')
+  if (apiWatcher.initialState_ == geoConstants.PROMPT)
     statusLog.recordApiStatus(apiWatcher.Status.USER_GRANTED);
-  else if (apiWatcher.initialState_ == 'granted')
+  else if (apiWatcher.initialState_ == geoConstants.GRANTED)
     statusLog.recordApiStatus(apiWatcher.Status.GRANTED_FROM_STORAGE);
 
   apiWatcher.pending_ = false;
-  apiWatcher.initialState_ = 'granted';
+  apiWatcher.initialState_ = geoConstants.GRANTED;
 }
 
 
@@ -172,15 +194,15 @@ apiWatcher.failureCallback = function(errorCode) {
 
   // If the error code is a timeout, the permission status might have been
   // approved prior to failing, which would have been seen by recordSuccess.
-  if (errorCode != 1)
+  if (errorCode != geoConstants.ErrorCode.PERMISSION_DENIED)
     return;
 
-  if (apiWatcher.initialState_ == 'denied') {
+  if (apiWatcher.initialState_ == geoConstants.DENIED) {
     statusLog.recordApiStatus(apiWatcher.Status.DENIED_FROM_STORAGE, delta);
     return;
   }
 
-  if (apiWatcher.initialState_ == 'granted') {
+  if (apiWatcher.initialState_ == geoConstants.GRANTED) {
     statusLog.recordApiStatus(apiWatcher.Status.GRANTED_BUT_OS);
     return;
   }
@@ -190,13 +212,14 @@ apiWatcher.failureCallback = function(errorCode) {
     function(permissionStatus) {
       var state = permissionStatus.state || permissionStatus.status;
 
-      if (state == 'prompt' && delta > apiWatcher.THRESHOLD) {
+      if (state == geoConstants.PROMPT && delta > geoConstants.THRESHOLD) {
         statusLog.recordApiStatus(apiWatcher.Status.USER_DISMISSED, delta);
-      } else if (state == 'prompt' && delta <= apiWatcher.THRESHOLD) {
+      } else if (state == geoConstants.PROMPT &&
+                 delta <= geoConstants.THRESHOLD) {
         statusLog.recordApiStatus(apiWatcher.Status.BROWSER_BLOCKED, delta);
-      } else if (state == 'denied') {
+      } else if (state == geoConstants.DENIED) {
         statusLog.recordApiStatus(apiWatcher.Status.USER_DENIED, delta);
-        apiWatcher.initialState_ = 'denied';
+        apiWatcher.initialState_ = geoConstants.DENIED;
       }
     });
 }
@@ -215,7 +238,7 @@ apiWatcher.recordInvocation = function() {
 
   // If the permission was requested on load, this could be happening before
   // checkInitialState has had a chance to run, so force-invoke it here.
-  if (apiWatcher.initialState_ == 'unknown')
+  if (apiWatcher.initialState_ == geoConstants.UNKNOWN)
     apiWatcher.checkInitialState();
 }
 
@@ -229,7 +252,7 @@ apiWatcher.checkBeforeNavigate = function() {
     return;
 
   var delta = Date.now() - apiWatcher.timestamp_;
-  if (delta < apiWatcher.THRESHOLD)
+  if (delta < geoConstants.THRESHOLD)
     statusLog.recordApiStatus(apiWatcher.Status.FAST_NAVIGATE, delta);
   else
     statusLog.recordApiStatus(apiWatcher.Status.SLOW_NAVIGATE, delta);
@@ -277,7 +300,6 @@ callbackWatcher.Status = {
 };
 
 // Used to differentiate between an automated and human response to a dialog.
-callbackWatcher.THRESHOLD = 10;  // Milliseconds
 callbackWatcher.timestamp_ = 0;
 
 // Used to identify situations where the user navigates the page without
@@ -291,7 +313,7 @@ callbackWatcher.pending_ = false;
  */
 callbackWatcher.successCallback = function() {
   var delta = Date.now() - callbackWatcher.timestamp_;
-  if (delta > callbackWatcher.THRESHOLD)
+  if (delta > geoConstants.THRESHOLD)
     statusLog.recordCallbackStatus(callbackWatcher.Status.USER_GRANTED, delta);
   else
     statusLog.recordCallbackStatus(callbackWatcher.Status.AUTO_GRANTED, delta);
@@ -310,13 +332,14 @@ callbackWatcher.failureCallback = function(errorCode) {
   callbackWatcher.timestamp_ = 0;
   callbackWatcher.pending_ = false;
 
-  if (errorCode != 1) {
+  if (errorCode != geoConstants.ErrorCode.PERMISSION_DENIED) {
+    console.log('Callback tracking: error code ' + errorCode);
     statusLog.recordCallbackStatus(callbackWatcher.Status.UNKNOWN, delta);
     return;
   }
 
   var delta = Date.now() - callbackWatcher.timestamp_;
-  if (delta > callbackWatcher.THRESHOLD)
+  if (delta > geoConstants.THRESHOLD)
     statusLog.recordCallbackStatus(callbackWatcher.Status.USER_DENIED, delta);
   else
     statusLog.recordCallbackStatus(callbackWatcher.Status.AUTO_DENIED, delta);
@@ -342,7 +365,7 @@ callbackWatcher.checkBeforeNavigate = function() {
     return;
 
   var delta = Date.now() - callbackWatcher.timestamp_;
-  if (delta < callbackWatcher.THRESHOLD)
+  if (delta < geoConstants.THRESHOLD)
     statusLog.recordCallbackStatus(callbackWatcher.Status.FAST_NAVIGATE, delta);
   else
     statusLog.recordCallbackStatus(callbackWatcher.Status.SLOW_NAVIGATE, delta);
@@ -484,11 +507,11 @@ statusLog.recordApiStatus = function(newStatus, delta) {
     humanString = 'user dismissed';
   else if (newStatus == apiWatcher.Status.BROWSER_BLOCKED)
     humanString = 'browser blocked';
-  else if (newStatus == apiWatcher.Status.SETTINGS_GRANTED)
+  else if (newStatus == apiWatcher.Status.GRANTED_ELSEWHERE)
     humanString = 'user granted in settings';
-  else if (newStatus == apiWatcher.Status.SETTINGS_DENIED)
+  else if (newStatus == apiWatcher.Status.DENIED_ELSEWHERE)
     humanString = 'user denied in settings';
-  else if (newStatus == apiWatcher.Status.SETTINGS_DEFAULT)
+  else if (newStatus == apiWatcher.Status.RESET_ELSEWHERE)
     humanString = 'user cleared in settings';
   else if (newStatus == apiWatcher.Status.FAST_NAVIGATE)
     humanString = 'navigated too quickly to respond';
@@ -597,7 +620,7 @@ revoke.handleClick = function() {
  * @param {Object} permissionState The state of the permission.
  */
 revoke.updateButtonState = function(permissionState) {
-  if (permissionState == 'granted') {
+  if (permissionState == geoConstants.GRANTED) {
     $('revoke-button').removeAttribute('disabled');
     $('revoke-button').addEventListener('click', revoke.handleClick);
   } else {
@@ -605,6 +628,25 @@ revoke.updateButtonState = function(permissionState) {
     $('revoke-button').removeEventListener('click', revoke.handleClick);
   }
 }
+
+
+// *****************************************************************************
+// NAVIGATION
+// This adds fragment navigation button for testing.
+// *****************************************************************************
+
+var navExample = {};
+
+/**
+ *
+ */
+navExample.setupButtons = function() {
+  $('fragment-button').addEventListener('click', function() {
+    var number = Math.floor(Math.random() * 100);
+    window.location.hash = 'example' + number;
+  });
+}
+document.addEventListener('DOMContentLoaded', navExample.setupButtons);
 
 
 function $(elementName) {
