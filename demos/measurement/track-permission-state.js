@@ -375,7 +375,7 @@ callbackWatcher.checkBeforeNavigate = function() {
     return;
 
   var delta = Date.now() - callbackWatcher.timestamp_;
-  if (delta < geoConstants.THRESHOLD) {
+  if (delta < geoConstants.THRESHOLD)
     statusLog.recordCallbackStatus(callbackWatcher.Status.FAST_NAVIGATE, delta);
   else
     statusLog.recordCallbackStatus(callbackWatcher.Status.SLOW_NAVIGATE, delta);
