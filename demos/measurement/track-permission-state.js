@@ -32,7 +32,7 @@ geoConstants.UNKNOWN = 'unknown';  // Used here but not part of the API spec.
 
 // The timing threshold used to differentiate between an automated and human
 // response to a dialog.
-geoConstants.THRESHOLD = 10;  // Milliseconds
+geoConstants.THRESHOLD = 500;  // Milliseconds
 
 // Constants for the PositionError interface.
 geoConstants.ErrorCode = {
