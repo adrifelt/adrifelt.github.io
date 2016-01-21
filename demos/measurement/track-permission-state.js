@@ -518,11 +518,11 @@ statusLog.recordApiStatus = function(newStatus, delta) {
   else if (newStatus == apiWatcher.Status.BROWSER_BLOCKED)
     humanString = 'browser blocked';
   else if (newStatus == apiWatcher.Status.GRANTED_ELSEWHERE)
-    humanString = 'user granted in settings';
+    humanString = 'user granted elsewhere';
   else if (newStatus == apiWatcher.Status.DENIED_ELSEWHERE)
-    humanString = 'user denied in settings';
+    humanString = 'user denied elsewhere';
   else if (newStatus == apiWatcher.Status.RESET_ELSEWHERE)
-    humanString = 'user cleared in settings';
+    humanString = 'user cleared elsewhere';
   else if (newStatus == apiWatcher.Status.FAST_NAVIGATE)
     humanString = 'navigated too quickly to respond';
   else if (newStatus == apiWatcher.Status.SLOW_NAVIGATE)
