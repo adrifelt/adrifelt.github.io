@@ -84,7 +84,7 @@ apiWatcher.requestAvailable_ = false;
 apiWatcher.revokeAvailable_ = false;
 
 // Information needed to calculate the current state.
-apiWatcher.pending_ = false;
+apiWatcher.pending_ = 0;
 apiWatcher.initialState_ = geoConstants.UNKNOWN;
 
 
@@ -143,12 +143,12 @@ apiWatcher.checkInitialState = function() {
  */
 apiWatcher.recordPermissionChange = function() {
   var state = this.state || this.status;
-  if (state == geoConstants.GRANTED && apiWatcher.pending_) {
+  if (state == geoConstants.GRANTED && apiWatcher.pending_ > 0) {
     // The success callback might take a long time to actually fire, due to
     // how long GPS takes to resolve. Preempt it here.
     apiWatcher.successCallback();
     return;
-  } else if (apiWatcher.pending_) {
+  } else if (apiWatcher.pending_ > 0) {
     return;
   }
 
@@ -166,7 +166,7 @@ apiWatcher.recordPermissionChange = function() {
  * Invoked when the permission is granted.
  */
 apiWatcher.successCallback = function() {
-  if (!apiWatcher.queryAvailable_ || !apiWatcher.pending_)
+  if (!apiWatcher.queryAvailable_ || apiWatcher.pending_ == 0)
     return;
 
   if (apiWatcher.initialState_ == geoConstants.PROMPT)
@@ -174,7 +174,7 @@ apiWatcher.successCallback = function() {
   else if (apiWatcher.initialState_ == geoConstants.GRANTED)
     statusLog.recordApiStatus(apiWatcher.Status.GRANTED_FROM_STORAGE);
 
-  apiWatcher.pending_ = false;
+  apiWatcher.pending_--;
   apiWatcher.initialState_ = geoConstants.GRANTED;
 }
 
@@ -190,7 +190,7 @@ apiWatcher.failureCallback = function(errorCode) {
   if (!apiWatcher.queryAvailable_)
     return;
 
-  apiWatcher.pending_ = false;
+  apiWatcher.pending_--;
 
   // If the error code is a timeout, the permission status might have been
   // approved prior to failing, which would have been seen by recordSuccess.
@@ -233,7 +233,7 @@ apiWatcher.recordInvocation = function() {
     return;
 
   statusLog.recordApiStatus(apiWatcher.Status.REQUESTED);
-  apiWatcher.pending_ = true;
+  apiWatcher.pending_++;
   apiWatcher.timestamp_ = Date.now();
 
   // If the permission was requested on load, this could be happening before
@@ -248,7 +248,7 @@ apiWatcher.recordInvocation = function() {
  * @return {null} To make the method execute in Chrome.
  */
 apiWatcher.checkBeforeNavigate = function() {
-  if (!apiWatcher.pending_ || !apiWatcher.queryAvailable_)
+  if (apiWatcher.pending_ == 0 || !apiWatcher.queryAvailable_)
     return;
 
   var delta = Date.now() - apiWatcher.timestamp_;
@@ -295,8 +295,12 @@ callbackWatcher.Status = {
                       // possibly because the user approved it in the past.
   AUTO_DENIED: 5,     // Browser automatically denied the permission,
                       // possibly because the user denied it in the past.
-  FAST_NAVIGATE: 6,   // Navigated away from the page shortly after request.
-  SLOW_NAVIGATE: 7,   // Navigated away from the page without a response.
+  USER_FAILED: 6,     // User granted the permission in the browser but the
+                      // request was unable to complete
+  AUTO_FAILED: 7,     // Request was unable to complete and the user never saw
+                      // the prompt
+  FAST_NAVIGATE: 8,   // Navigated away from the page shortly after request.
+  SLOW_NAVIGATE: 9,   // Navigated away from the page without a response.
 };
 
 // Used to differentiate between an automated and human response to a dialog.
@@ -304,7 +308,7 @@ callbackWatcher.timestamp_ = 0;
 
 // Used to identify situations where the user navigates the page without
 // responding to the dialog.
-callbackWatcher.pending_ = false;
+callbackWatcher.pending_ = 0;
 
 
 /**
@@ -319,7 +323,7 @@ callbackWatcher.successCallback = function() {
     statusLog.recordCallbackStatus(callbackWatcher.Status.AUTO_GRANTED, delta);
 
   callbackWatcher.timestamp_ = 0;
-  callbackWatcher.pending_ = false;
+  callbackWatcher.pending_--;
 }
 
 
@@ -330,19 +334,25 @@ callbackWatcher.successCallback = function() {
  */
 callbackWatcher.failureCallback = function(errorCode) {
   callbackWatcher.timestamp_ = 0;
-  callbackWatcher.pending_ = false;
+  callbackWatcher.pending_--;
 
-  if (errorCode != geoConstants.ErrorCode.PERMISSION_DENIED) {
-    console.log('Callback tracking: error code ' + errorCode);
-    statusLog.recordCallbackStatus(callbackWatcher.Status.UNKNOWN, delta);
-    return;
-  }
+  // If POSITION_UNAVAILABLE or TIMEOUT, the permission has been granted but
+  // the request cannot be fulfilled.
+  var permissionFailure =
+      (errorCode == geoConstants.ErrorCode.PERMISSION_DENIED);
 
   var delta = Date.now() - callbackWatcher.timestamp_;
-  if (delta > geoConstants.THRESHOLD)
-    statusLog.recordCallbackStatus(callbackWatcher.Status.USER_DENIED, delta);
-  else
+  if (delta > geoConstants.THRESHOLD) {
+    statusLog.recordCallbackStatus(
+        permissionFailure ?
+          callbackWatcher.Status.USER_DENIED :
+          callbackWatcher.Status.USER_FAILED,
+        delta);
+  } else if (permissionFailure) {
     statusLog.recordCallbackStatus(callbackWatcher.Status.AUTO_DENIED, delta);
+  } else {
+    statusLog.recordCallbackStatus(callbackWatcher.Status.AUTO_FAILED, delta);
+  }
 }
 
 
@@ -352,7 +362,7 @@ callbackWatcher.failureCallback = function(errorCode) {
 callbackWatcher.recordInvocation = function() {
   statusLog.recordCallbackStatus(callbackWatcher.Status.REQUESTED);
   callbackWatcher.timestamp_ = Date.now();
-  callbackWatcher.pending_ = true;
+  callbackWatcher.pending_++;
 }
 
 
@@ -361,7 +371,7 @@ callbackWatcher.recordInvocation = function() {
  * @return {null} To make the method execute in Chrome.
  */
 callbackWatcher.checkBeforeNavigate = function() {
-  if (!callbackWatcher.pending_)
+  if (callbackWatcher.pending_ == 0)
     return;
 
   var delta = Date.now() - callbackWatcher.timestamp_;
@@ -547,6 +557,10 @@ statusLog.recordCallbackStatus = function(newStatus, delta) {
     humanString = 'auto granted';
   else if (newStatus == callbackWatcher.Status.AUTO_DENIED)
     humanString = 'auto denied';
+  else if (newStatus == callbackWatcher.Status.USER_FAILED)
+    humanString = 'user granted, but failed';
+  else if (newStatus == callbackWatcher.Status.AUTO_FAILED)
+    humanString = 'failed without interaction';
   else if (newStatus == callbackWatcher.Status.FAST_NAVIGATE)
     humanString = 'navigated too quickly to respond';
   else if (newStatus == callbackWatcher.Status.SLOW_NAVIGATE)
