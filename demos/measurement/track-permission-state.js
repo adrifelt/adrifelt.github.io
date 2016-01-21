@@ -545,6 +545,8 @@ statusLog.recordApiStatus = function(newStatus, delta) {
     humanString = 'navigated without responding';
   else if (newStatus == apiWatcher.Status.GRANTED_BUT_OS)
     humanString = 'location disabled by OS';
+  else if (newStatus == apiWatcher.Status.DEFERRED)
+    humanString = 'waiting for new state';
 
   var deltaString = '';
   if (delta) deltaString = ' (' + delta + 'ms)';
