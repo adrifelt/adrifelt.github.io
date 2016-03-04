@@ -50,6 +50,12 @@
 <button id="usb">USB</button>
 <button id="eme">Encrypted Media (EME)</button>
 
+<button id="keygen">&lt;keygen&gt;</button>
+
+<div id="keygen-container">
+</div>
+
+
 <hr>
 
 <button id="fullscreen">Fullscreen</button>
@@ -282,6 +288,10 @@ var register = {
     // Two downloads at the same time trigger a permission prompt in Chrome.
     triggerDownload();
     triggerDownload();
+  },
+  "keygen": function() {
+    var keygen = document.createElement("keygen");
+    document.getElementById("keygen-container").appendChild(keygen);
   }
 }
 
